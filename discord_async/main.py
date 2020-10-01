@@ -7,7 +7,7 @@ from discord.ext import commands
 
 import os
 
-bot = commands.Bot(command_prefix=os.getenv('COMMAND_PREFIX'))
+bot = commands.Bot(command_prefix=os.getenv('COMMAND_PREFIX').strip("\r"))
 
 @bot.event
 async def on_ready():
@@ -31,7 +31,8 @@ extensions = [  'cogs.owner',
                 'cogs.spam',
                 'cogs.guild',
                 'cogs.ping',
-                'cogs.voice'
+                'cogs.voice',
+                'cogs.purge'
                 ]
 
 # Load the cogs
