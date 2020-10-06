@@ -32,7 +32,8 @@ extensions = [  'cogs.owner',
                 'cogs.guild',
                 'cogs.ping',
                 'cogs.voice',
-                'cogs.purge'
+                'cogs.purge',
+                'cogs.error_handling'
                 ]
 
 # Load the cogs
