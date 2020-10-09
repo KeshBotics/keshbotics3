@@ -22,7 +22,7 @@ class discord_post(object):
             discord_message_url = "https://discordapp.com/api/channels/{}/messages".format(channel_id)
             r = requests.post(discord_message_url, headers = self.headers, data = json_data)
 
-    def prepare_message(self, twitch_username, twitch_thumbnail_url):
+    def prepare_twitch_message(self, twitch_username, twitch_thumbnail_url):
         twitch_channel_url = 'https://twitch.tv/' + twitch_username
         twitch_channel_preview_url = twitch_thumbnail_url.format(width=640,height=360)
         twitch_channel_preview_url += "?uid=" + ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])  #This prevents discord from caching the thumbnail and serving old thumbnails
@@ -61,3 +61,6 @@ class discord_post(object):
             }
 
         return(message)
+
+    def prepare_youtube_message(self, video_url, video_author, video_title):
+        pass
