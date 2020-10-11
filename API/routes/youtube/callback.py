@@ -2,6 +2,9 @@ import falcon
 import json
 from bs4 import BeautifulSoup
 
+# from classes.discord_post import discord_post
+from classes.youtube.youtube import youtube
+
 class youtube_callback(object):
     def __init__(self):
         pass
@@ -19,12 +22,10 @@ class youtube_callback(object):
         bs_data = BeautifulSoup(data,"xml")
 
         # Select out the relavent data
-        video_title  = bs.feed.entry.title.contents[0]
-        video_author = bs.feed.entry.author.findAll('name')[0].contents[0]
-        video_url    = bs.feed.entry.link['href']
+        # video_url    = bs_data.feed.entry.link['href']
+        channel_id   = bs_data.feed.entry.findAll('yt:channelId')[0].contents[0]
+        video_id     = bs_data.feed.entry.findAll('yt:videoId')[0].contents[0]
+        video_author = bs_data.feed.entry.author.findAll('name')[0].contents[0]
+        video_title  = bs_data.feed.entry.title.contents[0]
 
-        
-
-        # print("Video Titled: " + video_title)
-        # print("Uploaded By: " + video_author)
-        # print("Link: " + video_url)
+        youtube().post_notification(channel_id, video_id, video_author, video_title)
