@@ -20,10 +20,10 @@ class data_handler(object):
 
 
     def get_connection(self):
-        return(pymysql.connect(host=os.getenv('DB_HOST'),
-                                     user=os.getenv('DB_USER'),
-                                     password=os.getenv('DB_PASS'),
-                                     db=os.getenv('DB_NAME'),
+        return(pymysql.connect(host=os.getenv('DB_HOST').strip("\r"),
+                                     user=os.getenv('DB_USER').strip("\r"),
+                                     password=os.getenv('DB_PASS').strip("\r"),
+                                     db=os.getenv('DB_NAME').strip("\r"),
                                      charset='utf8mb4',
                                      cursorclass=pymysql.cursors.DictCursor))
 

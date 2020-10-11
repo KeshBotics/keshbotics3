@@ -37,7 +37,7 @@ class twitch_callback(object):
                 else:
                     # Notifcation has not been sent
                     discord_post_obj    = discord_post()
-                    message             = discord_post_obj.prepare_message(twitch_username, twitch_thumbnail_url)
+                    message             = discord_post_obj.prepare_twitch_message(twitch_username, twitch_thumbnail_url)
                     discord_channel_ids = data_handler().defined_select('discord_channels_by_twitch_user_id', [twitch_user_id], True)
 
                     discord_post_obj.post_message(message, discord_channel_ids)

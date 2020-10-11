@@ -16,6 +16,7 @@ from routes.twitch.add      import twitch_add
 from routes.twitch.delete   import twitch_delete
 from routes.twitch.callback import twitch_callback
 import routes.twitch.metrics as metrics
+from routes.youtube.callback import youtube_callback
 
 class public_facing_api(object):
     def __init__(self):
@@ -32,8 +33,8 @@ class public_facing_api(object):
             {'route':'/twitch/callback/{twitch_user_id}', 'class': twitch_callback()},
             {'route':'/twitch/metrics/{twitch_username}', 'class': metrics.twitch_metrics_username()},
             {'route':'/twitch/metrics/id/{twitch_user_id}', 'class': metrics.twitch_metrics_id()},
+            {'route':'/youtube/callback', 'class': youtube_callback()},
             {'route':'/', 'class':root()}
-
         ]
 
         self.app = falcon.API(middleware=[request_logging(), print_x_real_ip()])
