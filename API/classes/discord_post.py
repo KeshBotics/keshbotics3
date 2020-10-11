@@ -11,7 +11,7 @@ import string
 
 class discord_post(object):
     def __init__(self):
-        self.headers = { "Authorization":"Bot {}".format(os.getenv('DISCORD_BOT_TOKEN')),
+        self.headers = { "Authorization":"Bot {}".format(os.getenv('DISCORD_BOT_TOKEN').strip("\r")),
                         "User-Agent":"KeshBotics (vahkesh.com, v2.1)",
                         "Content-Type":"application/json", }
 
@@ -61,6 +61,3 @@ class discord_post(object):
             }
 
         return(message)
-
-    def prepare_youtube_message(self, video_url, video_author, video_title):
-        pass
