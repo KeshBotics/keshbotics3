@@ -3,7 +3,7 @@ from classes.discord_post import discord_post
 from classes.data_handler import data_handler
 
 
-class youtube(object):
+class youtube_notification(object):
     def __init__(self):
         self.data_handler = data_handler()
 
@@ -42,7 +42,7 @@ class youtube(object):
             return(True)
         else:
             return(False)
-            
+
     def insert_video_id(self, yt_video_id):
         # This function will add the youtube video id to the databse keshbotics.youtube_submissions
         # This table is used to prevent duplicate notifications
