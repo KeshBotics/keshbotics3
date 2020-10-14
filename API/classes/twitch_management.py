@@ -61,7 +61,7 @@ class twitch_handler(object):
         url = 'https://api.twitch.tv/helix/users?login=' + twitch_username
 
         headers = {
-            'client-id': os.getenv('TWITCH_CLIENT_ID'),
+            'client-id': os.getenv('TWITCH_CLIENT_ID').strip("\r"),
             'Authorization': self.oauth_token
         }
 
@@ -78,7 +78,7 @@ class twitch_handler(object):
 
             headers = {
                         'Content-Type' : 'application/json',
-                        'client-id' : os.getenv('TWITCH_CLIENT_ID'),
+                        'client-id' : os.getenv('TWITCH_CLIENT_ID').strip("\r"),
                         'Authorization': self.oauth_token
                         }
 
