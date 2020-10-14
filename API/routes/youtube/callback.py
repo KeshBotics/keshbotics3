@@ -2,7 +2,6 @@ import falcon
 import json
 from bs4 import BeautifulSoup
 
-# from classes.discord_post import discord_post
 from classes.youtube.youtube_notification import youtube_notification
 
 class youtube_callback(object):
@@ -27,5 +26,5 @@ class youtube_callback(object):
         video_id     = bs_data.feed.entry.findAll('yt:videoId')[0].contents[0]
         video_author = bs_data.feed.entry.author.findAll('name')[0].contents[0]
         video_title  = bs_data.feed.entry.title.contents[0]
-        
+
         youtube_notification().post_notification(channel_id, video_id, video_author, video_title)

@@ -11,6 +11,7 @@
 import re
 import requests
 import json
+import os
 
 class youtube_channel_id(object):
 
@@ -21,32 +22,33 @@ class youtube_channel_id(object):
         # This function will return the channel ID or the given URL.
         # If the function cannot find the channel ID, "None" will be returned.
 
-        # Determine if the URL is a /user/ or /channel/ URL
-        url_type = self.get_url_type(url)
-
-        # If url_type is not "user" or "channel", this function will be
-        # unable to determine the channel ID.
-        if url_type is None:
-            return(None)
-
-        # If the url_type is "channel", this function will return the channel ID
-        # If the url_type is "user", this function will return the username
+        # If the url type is "/channel/", this function will return the channel ID
+        # If the url type is "/user/", this function will return the username
+        # if the url type is "/c/", this function will return the custom url vanity name
         channel = self.re_channel_from_url(url)
 
-        if url_type is "channel":
-            # Use the regex function to select the channel ID from the URL.
+        if channel is None:
+            # re_channel_from_url was unable to retrieve the channel_id, user,
+            # or custom url from the input url
+            return(None)
+
+        # Depending on the url type, retrieve the channel ID
+        if "/channel/" in url:
+            # channel equals the Youtube channel ID
             return(channel)
 
-        elif url_type is "user":
+        elif "/user/" in url:
+            # channel equals the legacy username
             # Use the YouTube API to retrieve the channel ID from the username
             return(self.user_to_channel_id(channel))
 
-    def get_url_type(self, url):
-        if 'user' in url:
-            return("user")
-        elif 'channel' in url:
-            return("channel")
+        elif "/c/" in url:
+            # channel equals the custom url vanity name
+            # Use the Youtube API to search for the name
+            return(self.custom_url_to_channel_id(channel))
+
         else:
+            # Unable to parse the URL
             return(None)
 
     def re_channel_from_url(self, url):
@@ -60,7 +62,8 @@ class youtube_channel_id(object):
 
         # Regular expression for selecting the channel ID
         # Look at: https://regex101.com/r/5TBgN1/1 for more information
-        regex = r"^(?:https?:\/\/)?(?:(?:www|gaming)\.)?youtube\.com\/(?:channel\/|(?:user\/)?)([a-z\-_0-9]+)\/?(?:[\?#]?.*)"
+        # TODO: This regex will return "k" for "KárolyZsolnai"
+        regex = r"^(?:https?:\/\/)?(?:(?:www|gaming)\.)?youtube\.com\/(?:channel\/|(?:user\/|(?:c\/))?)([a-z\-_0-9]+)\/?(?:[\?#]?.*)"
 
         # Use the search function to find the channel ID
         matches = re.search(regex, url, re.IGNORECASE)
@@ -75,11 +78,24 @@ class youtube_channel_id(object):
     def user_to_channel_id(self, channel):
         # This function will use the "YouTube Data API v3" to retreive the
         # channel ID from the given
-        
+
         data = requests.get("https://www.googleapis.com/youtube/v3/channels?part=id&forUsername=" + channel + "&key=" + os.getenv('GCP_API_KEY').strip("\r"))
 
         data = json.loads(data.content)
 
         channel_id = data['items'][0]['id']
+
+        return(channel_id)
+
+    def custom_url_to_channel_id(self, channel):
+        # The YouTube Data API v3 does not explain how to convert a custom URL
+        # to a channel ID. The only reliable method of getting the channel ID for
+        # this URL type is to perform a serach and select the first channel.
+
+        data = requests.get("https://www.googleapis.com/youtube/v3/search?part=id%2Csnippet&q=" + channel + "&type=channel&key=" + os.getenv('GCP_API_KEY').strip("\r"))
+
+        data = json.loads(data.content)
+
+        channel_id = data['items'][0]['id']['channelId']
 
         return(channel_id)
