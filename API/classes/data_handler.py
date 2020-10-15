@@ -141,3 +141,20 @@ class data_handler(object):
             print('data_handler: 4')
             print(e)
             return(False)
+
+    def delete(self, sql, input):
+
+        try:
+            conn = self.get_connection()
+
+            with conn.cursor() as cursor:
+                cursor.execute(sql, input)
+
+            conn.commit()
+            conn.close()
+
+            return(True)
+        except Exception as e:
+            print('data_handler: 4')
+            print(e)
+            return(False)
