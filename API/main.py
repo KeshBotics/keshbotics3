@@ -6,6 +6,7 @@ import falcon
 import json
 from wsgiref import simple_server
 import os
+import time
 
 # middleware
 from middleware.request_logging import request_logging
@@ -16,7 +17,10 @@ from routes.twitch.add      import twitch_add
 from routes.twitch.delete   import twitch_delete
 from routes.twitch.callback import twitch_callback
 import routes.twitch.metrics as metrics
+
 from routes.youtube.callback import youtube_callback
+from routes.youtube.add      import youtube_add
+from routes.youtube.delete   import youtube_delete
 
 class public_facing_api(object):
     def __init__(self):
@@ -27,13 +31,18 @@ class public_facing_api(object):
 
         self.routes = [
             {'route':'/test',                   'class': test()},
+
             {'route':'/twitch/manage/add',      'class': twitch_add()},
             {'route':'/twitch/manage/delete',   'class': twitch_delete()},
             {'route':'/twitch/callback', 'class': twitch_callback()},
             {'route':'/twitch/callback/{twitch_user_id}', 'class': twitch_callback()},
             {'route':'/twitch/metrics/{twitch_username}', 'class': metrics.twitch_metrics_username()},
             {'route':'/twitch/metrics/id/{twitch_user_id}', 'class': metrics.twitch_metrics_id()},
+
             {'route':'/youtube/callback', 'class': youtube_callback()},
+            {'route':'/youtube/manage/add', 'class': youtube_add()},
+            {'route':'/youtube/manage/delete', 'class': youtube_delete()},
+
             {'route':'/', 'class':root()}
         ]
 
@@ -66,7 +75,7 @@ class test(object):
         print(req.headers)
         resp.status = falcon.HTTP_200   # Set response type
         resp.content_type = ['application/json']    # Set content_type
-        resp.body = os.getenv('TEST_VAR')
+        resp.body = "Test successful"
 
     def on_post(self, req, resp):
         pass
