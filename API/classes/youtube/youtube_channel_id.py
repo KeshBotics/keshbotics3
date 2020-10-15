@@ -1,4 +1,4 @@
-# Author: @Travis-Owens
+# Authors: @Travis-Owens, @Alireza-Sampour
 # Date: 2020-10-12
 
 # This class is used to lookup, parse, and find the channelId of a youtube
