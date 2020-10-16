@@ -28,6 +28,7 @@ async def on_message(message):
 extensions = [  'cogs.owner',
                 'cogs.twitch',
                 'cogs.twitch_history',
+                'cogs.youtube',
                 'cogs.spam',
                 'cogs.guild',
                 'cogs.ping',
