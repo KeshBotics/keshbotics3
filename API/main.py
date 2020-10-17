@@ -13,6 +13,9 @@ from middleware.request_logging import request_logging
 from middleware.print_x_real_ip import print_x_real_ip
 
 # routes
+from routes.root            import root
+from routes.test            import test
+
 from routes.twitch.add      import twitch_add
 from routes.twitch.delete   import twitch_delete
 from routes.twitch.callback import twitch_callback
@@ -65,30 +68,6 @@ class public_facing_api(object):
 
     def get_app(self):
         return(self.app)
-
-class test(object):
-    def __init__(self):
-        pass
-
-    def on_get(self, req, resp):
-        print(req.get_header('x-real-ip'))
-        print(req.headers)
-        resp.status = falcon.HTTP_200   # Set response type
-        resp.content_type = ['application/json']    # Set content_type
-        resp.body = "Test successful"
-
-    def on_post(self, req, resp):
-        pass
-
-class root(object):
-        def __init__(self):
-            pass
-
-        def on_get(self, req, resp):
-            pass
-
-        def on_post(self, req, resp):
-            pass
 
 
 if __name__ == '__main__':
