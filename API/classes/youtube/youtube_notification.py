@@ -1,3 +1,13 @@
+# Author: @Travis-Owens
+# Date: 2020-10-17
+# Description: This class is used to send messages (notifications) about YouTube
+#               uploads to the appropriate Discord text-channels. The database is
+#               structured as follows `id`, `yt_channel_id`, `disc_channel_id`.
+#               When a new video ID is received, this class will find the
+#               Discord channel IDs associated with the YouTube channel ID.
+
+# Related Routes:
+# - /youtube/callback
 
 from classes.discord_post import discord_post
 from classes.data_handler import data_handler
@@ -7,20 +17,19 @@ class youtube_notification(object):
     def __init__(self):
         self.data_handler = data_handler()
 
-    # Process the information received from the webhook callback
     def post_notification(self, yt_channel_id, yt_video_id, yt_video_author, yt_video_title):
+        # Process the information received from the webhook callback
 
         # Check if notification was already sent
         # Duplicate POST checking, in testing some yt_video_ids were sent multiple times
         is_unique = self.check_for_duplicate(yt_video_id)
 
         if is_unique is False:
-            # This video id has already been processed
-            print("video already exist")
+            # The given video id has already been processed, quit processing the request
             return
-        else:
-            # Add video_id to database
-            self.insert_video_id(yt_video_id)
+
+        # The given video id is new, insert it into the database
+        self.insert_video_id(yt_video_id)
 
         # Select discord_channel_ids that have subscribed to yt_channel_id
         discord_channel_ids = self.get_discord_channel_ids(yt_channel_id)
@@ -31,20 +40,23 @@ class youtube_notification(object):
         discord_post().post_message(message, discord_channel_ids)
 
     def check_for_duplicate(self, yt_video_id):
-        # If the youtube vidoe id has already been processed / had notification sent, this function will return false.
+        # The ID of each video is stored in the database to prevent duplication.
         # If the youtube video id is unique, this function will return True
+        # If the youtube vidoe id has already been processed / had notification sent, this function will return false.
 
         sql     = "SELECT * FROM `youtube_submissions` WHERE `yt_video_id` = %s"
         values  = [yt_video_id]
         res     = self.data_handler.select(sql, values)
 
         if(len(res) == 0):
+            # The video ID was not found in the database
             return(True)
         else:
+            # The video ID is NOT unique
             return(False)
 
     def insert_video_id(self, yt_video_id):
-        # This function will add the youtube video id to the databse keshbotics.youtube_submissions
+        # This function will add the youtube video id to the databse `youtube_submissions`
         # This table is used to prevent duplicate notifications
 
         sql     = "INSERT INTO `youtube_submissions` VALUES(NULL, %s)"
@@ -65,6 +77,7 @@ class youtube_notification(object):
         return(list(map(lambda x : x['disc_channel_id'], data)))
 
     def prepare_discord_message(self, yt_video_id, yt_video_author, yt_video_title):
+        # Embeded message for Discord
         message = {
               # "content": ,
               "embed": {
@@ -98,8 +111,3 @@ class youtube_notification(object):
             }
 
         return(message)
-
-
-
-    def subscribe_to_webhook(self, yt_channel_id):
-        pass

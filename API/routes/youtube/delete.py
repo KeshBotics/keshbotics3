@@ -1,3 +1,10 @@
+# Author: @Travis-Owens
+# Date: 2020-10-17
+# Description: This class is used to delete YouTube notifiaction to the database.
+
+# Related Routes:
+# - /youtube/manage/delete
+
 import falcon
 
 from middleware.auth import auth

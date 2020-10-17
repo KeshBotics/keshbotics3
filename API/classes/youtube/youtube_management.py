@@ -1,7 +1,11 @@
 # Author: @Travis-Owens
 # Date: 2020-10-11
-# Description: This class is used to subscribe and unsubscribe from the YouTube
-#               webhook POST callbacks.
+# Description: This class is used to add/delete subscriptions from the database,
+#              and subscribe to webhook notifications from YouTube.
+
+# Related Routes:
+# - /youtube/manage/add
+# - /youtube/manage/delete
 
 import requests
 import os
@@ -11,6 +15,7 @@ from classes.youtube.youtube_channel_id import youtube_channel_id
 
 class youtube_management(object):
     def __init__(self):
+        # Object for interacting with the database
         self.data_handler = data_handler()
 
     def subscribe(self, yt_channel_url, disc_channel_id):
@@ -142,13 +147,15 @@ class youtube_management(object):
             return(True)
 
         except requests.exceptions.ReadTimeout:
-            print("timeout")
+            # TODO: See above
             return(True)
         except Exception as e:
             print("manage_webhook_subscription: " + str(e))
             return(False)
 
     def get_form_data(self, mode, yt_channel_id,):
+        # The return dict contains the required variables to subscribe to the
+        # appspot webhook.
         return({
             'hub.callback':os.getenv('YOUTUBE_CALLBACK').strip("\r"),
             'hub.topic':'https://www.youtube.com/xml/feeds/videos.xml?channel_id=' + yt_channel_id,

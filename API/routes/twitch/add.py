@@ -1,5 +1,6 @@
 # Author: @Travis-Owens
 # Date:   2020-02-16
+# Description: This route is used to create a notication about a defined twitch user.
 
 import falcon
 import json
@@ -24,5 +25,6 @@ class twitch_add(object):
 
             # Using twitch_management class attempt to add new notifiaction
             resp.body = twitch_management(twitch_username, discord_channel_id).add()
+            
         except Exception as e:
             resp.body = "API ERROR"

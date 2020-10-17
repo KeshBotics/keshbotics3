@@ -1,3 +1,10 @@
+# Author: @Travis-Owens
+# Date: 2020-10-17
+# Description: This class is used to process incoming notifications from YouTube.
+
+# Related Routes:
+# - /youtube/callback
+
 import falcon
 import json
 from bs4 import BeautifulSoup

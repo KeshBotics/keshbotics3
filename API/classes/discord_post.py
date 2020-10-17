@@ -1,10 +1,9 @@
 # Author: Travis-Owens
 # Date: 2020-02-20
-# Description: Used to post messages to discord
+# Description: General purpose class for sending messages to Discord channels.
 
 import json
 import requests
-import uuid
 import os
 import random
 import string
