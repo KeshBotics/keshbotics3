@@ -7,6 +7,7 @@ from time import sleep
 
 from twitch_oauth import twitch_oauth
 from twitch_subscribe import twitch_subscribe
+from youtube_subscribe import youtube_subscribe
 from cron_test import cron_test
 
 while True:
@@ -14,6 +15,7 @@ while True:
         # cron_test()
         twitch_oauth()
         twitch_subscribe()
+        youtube_subscribe()
         sleep(60*60)
     except Exception as e:
         print(str(e))
