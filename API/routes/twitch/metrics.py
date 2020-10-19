@@ -1,6 +1,11 @@
 # Author: @Travis-Owens
 # Date: 2020-02-28
-# Description: This route is used to retreive a dictionary of recent streams
+# Description: This route is used to retreive a dictionary of recent streams on
+#               a per twitch user basis.
+
+# Related routes:
+# - /twitch/metrics/{twitch_username}
+# - /twitch/metrics/id/{twitch_user_id}
 
 import falcon
 import json

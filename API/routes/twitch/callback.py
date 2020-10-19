@@ -1,3 +1,21 @@
+# Author: @Travis-Owens
+# Date:   2020-02-16
+# Description: The Twitch API will send a POST request to this route with
+#               details about a Twitch user's live stream. The POST data does not
+#               contain the twitch_user_id, to create clarity the twitch_user_id is
+#               appended to the API route {twitch_user_id}. When a request is recieved
+#               the necessary information is extracted, messages sent to the appropriate
+#               discord channels, and start/stop times added to the stream metrics database
+#               table. Additionally, when the live stream has concluded, Twitch will
+#               send an empty json object. Because this application appends the
+#               twitch_user_id to the callback this empty object can be correlated.
+#
+#               In some cases, Twitch will send multiple notifications about a
+#               single live stream. This class attempts to mitigate sending the
+#               same notifcation multiple times.
+
+# Related Routes:
+# - /twitch/callback/{twitch_user_id}
 
 import falcon
 import json

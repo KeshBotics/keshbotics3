@@ -1,6 +1,8 @@
 # Author: @Travis-Owens
 # Date:  2020-02-16
-# Description: Used for authenticated routes
+# Description: Used for authenticated routes, very basic form of authentication.
+#              The 'auth' header in must match the 'API_AUTH_CODE' set in the
+#              environment variables.
 
 import falcon
 import json

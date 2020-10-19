@@ -2,6 +2,10 @@
 # Date:   2020-02-16
 # Description: used for adding/deleting twitch channels from the db
 
+# Related Routes:
+# - /twitch/manage/add
+# - /twitch/manage/delete
+
 import falcon
 import json
 import requests

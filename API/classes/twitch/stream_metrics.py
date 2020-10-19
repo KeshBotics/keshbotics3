@@ -1,13 +1,21 @@
 # Author: @Travis-Owens
 # Date: 2020-02-26
-# Description: Used to collect information about streamming habbits
+# Description: Used to collect information about streamming habbits. Stream start
+#               and stop times are saved to the database. This information can be
+#               retrieved by twitch_user_id with a list of the start/stop times
+#               of recent streams
 
+# Related routes:
+# - /twitch/callback/{twitch_user_id}       (receiving data)
+# - /twitch/metrics/{twitch_username}       (retrieving data)
+# - /twitch/metrics/id/{twitch_user_id}     (retrieving data)
 
 import datetime
 from classes.data_handler import data_handler
 
 class stream_metrics(object):
     def __init__(self):
+        # TODO: Increase clarity and commenting of this class
         pass
 
     def stream_start(self, twitch_user_id):

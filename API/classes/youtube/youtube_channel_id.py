@@ -8,6 +8,10 @@
 #   youtube.com/channel/xxxxxx
 # Preceding https:// or https://www. is accepted.
 
+# Related Routes:
+# - /youtube/manage/add
+# - /youtube/manage/delete
+
 import re
 import requests
 import json
@@ -61,7 +65,7 @@ class youtube_channel_id(object):
         # after the channel ID.
 
         # Regular expression for selecting the channel ID
-        # Look at: https://regex101.com/r/5TBgN1/1 for more information  
+        # Look at: https://regex101.com/r/5TBgN1/1 for more information
         regex = r"(?:(?<=channel/)|(?<=c/)|(?<=user/))[^/?\s]+"
 
         # Use the search function to find the channel ID

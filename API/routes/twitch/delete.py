@@ -1,5 +1,9 @@
 # Author: @Travis-Owens
 # Date:   2020-02-16
+# Description: This class is used to remove a notifiaction from the database.
+
+# Related Routes:
+# - /twitch/manage/delete
 
 import falcon
 import json

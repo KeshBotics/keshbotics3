@@ -1,6 +1,8 @@
 # Author: @Travis Owens
 # Date: 2020-02-20
-# Description: Misc data retreival functions
+# Description: This is the primary interface for interacting with the database.
+#               The purpose of this class is to create a standardized/modular
+#               method of accessing the database resources.
 
 import pymysql
 import os
