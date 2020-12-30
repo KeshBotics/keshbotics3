@@ -26,8 +26,3 @@ class cors(object):
             ))
 
         resp.status = falcon.HTTP_OK
-
-
-format_strings = ','.join(['%s'] * len(id2update))
-cursor.execute(stmt % format_strings,
-                tuple(id2update))
