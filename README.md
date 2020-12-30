@@ -33,7 +33,7 @@ Primary Functionality:
 
   Build:
 
-    docker build -t keshbotics:v3
+    docker build -t keshbotics:v3 .
 
   Run:
 
