@@ -9,6 +9,7 @@ import os
 # middleware
 from middleware.request_logging import request_logging
 from middleware.print_x_real_ip import print_x_real_ip
+from middleware.cors import cors
 
 # routes
 from routes.root            import root
@@ -24,6 +25,12 @@ import routes.twitch.metrics as metrics
 from routes.youtube.callback import youtube_callback
 from routes.youtube.add      import youtube_add
 from routes.youtube.delete   import youtube_delete
+
+from routes.twitter.callback import twitter_callback
+
+# Routes for web interface
+from routes.web.discord.auth_callback import discord_auth_callback
+from routes.web.discord.auth_validate import discord_auth_validate
 
 class public_facing_api(object):
     def __init__(self):
@@ -42,17 +49,20 @@ class public_facing_api(object):
             {'route':'/twitch/callback/{twitch_user_id}',   'class': twitch_callback()},
             {'route':'/twitch/metrics/{twitch_username}',   'class': metrics.twitch_metrics_username()},
             {'route':'/twitch/metrics/id/{twitch_user_id}', 'class': metrics.twitch_metrics_id()},
-
-            {'route':'/youtube/callback',       'class': youtube_callback()},
+            {'route':'/youtube/callback', 'class': youtube_callback()},
             {'route':'/youtube/manage/add',     'class': youtube_add()},
             {'route':'/youtube/manage/delete',  'class': youtube_delete()},
-
-            {'route':'/',       'class':root()}
             {'route':'/test',   'class': test()},
+            {'route':'/twitter/callback', 'class': twitter_callback()},
+            {'route':'/', 'class':root()},
+            {'route':'/v1/web/discord/auth/callback', 'class':discord_auth_callback()},
+            {'route':'/v1/web/discord/auth/validate', 'class':discord_auth_validate()}
+
         ]
 
-        # Create a falcon API object with defined middleware.
-        self.app = falcon.API(middleware=self.middleware)
+        self.app = falcon.API(middleware=[cors(), request_logging(), print_x_real_ip()])
+        self.setup_routes()
+        # self.start()
 
         # Add the API routes (self.routes) to the falcon API object.
         self.setup_routes()
