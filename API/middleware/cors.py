@@ -25,4 +25,4 @@ class cors(object):
                 ('Access-Control-Max-Age', '86400'),  # 24 hours
             ))
 
-        resp.status = falcon.HTTP_OK
+            resp.status = falcon.HTTP_OK

@@ -25,7 +25,7 @@ class twitch_history_cog(commands.Cog):
 
         resp = requests.get(str(os.getenv('API_URL') + "/twitch/metrics/" + twitch_username))
 
-        data = json.loads(resp.text)
+        data = json.loads(resp.content)
 
         message = 'Time Metrics for the Last 10 Streams \nDate - - - - - Stream Length\n'
 
