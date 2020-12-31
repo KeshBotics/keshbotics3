@@ -27,12 +27,12 @@ class youtube_management(object):
 
         # If the youtube_channel_id is unable to parse the URL, return the error.
         if yt_channel_id is None:
-            return("Error unable to parse the URL!")
+            return({"status":"error", "code":400, "message":"Error unable to parse the URL!"})
 
         # Check if the yt_channel_id and disc_channel_id combination are unqiue.
         if(self.check_if_exist(yt_channel_id, disc_channel_id)):
             # The subscription to the YouTube channel in the Discord channel already exist.
-            return("Notification already exist!")
+            return({"status":"error", "code":400, "message":"Notification already exist!"})
 
         # Add notifcation to local databse
         database_status = self.manage_databse_subscription("subscribe", yt_channel_id, disc_channel_id)
@@ -40,7 +40,7 @@ class youtube_management(object):
         # Check if the local database insertion
         if database_status is False:
             # Error with the database
-            return("Error internal database failure!")
+            return({"status":"error", "code":503, "message":"Error internal database failure!"})
 
         # Subscribe to the webhook for the given channel
         # # TODO: figure out timing issue
@@ -54,7 +54,7 @@ class youtube_management(object):
             # mechanism for handling this
             pass
 
-        return("Notification successfully added!")
+        return({"status":"success", "code":200, "message":"Notification successfully added!"})
 
     def unsubscribe(self, yt_channel_url, disc_channel_id):
         # Use the youtube_channel_id class to determine the YouTube channel ID
@@ -65,7 +65,7 @@ class youtube_management(object):
 
         # If the youtube_channel_id is unable to parse the URL, return the error.
         if yt_channel_id is None:
-            return("Error unable to parse the URL!")
+            return({"status":"error", "code":400, "message":"Error unable to parse the URL!"})
 
         # Remove the yt_channel and disc_channel_id combination from the database
         database_status = self.manage_databse_subscription("unsubscribe", yt_channel_id, disc_channel_id)
@@ -75,9 +75,9 @@ class youtube_management(object):
 
         if database_status == False:
             # TODO: Implement methodolgy of notifiying developers about this issue.
-            return("Error removing notification from the database!")
+            return({"status":"error", "code":503, "message":"Error removing notification from the database!"})
         else:
-            return("Notification successfully removed!")
+            return({"status":"success", "code":200, "message":"Notification successfully removed!"})
 
 
     def check_if_exist(self, yt_channel_id, disc_channel_id):

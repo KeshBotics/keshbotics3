@@ -25,34 +25,34 @@ class twitch_management(object):
 
     def add(self):
         if(self.twitch_user_id == None):
-            return("Twitch username is invalid!")
+            return({"status":"error", "code":400, "message":"Twitch username is invalid!"})
 
         if(len(self.db.defined_select('unique_twitch_notification', [self.twitch_username, self.discord_channel_id])) != 0):
-            return("Notification already exist!")
+            return({"status":"error", "code":400, "message":"Notification already exist!"})
 
         subscribe_status = self.twitch.subscribe(self.twitch_user_id)
 
         if(subscribe_status == True):
             db_status        = self.db.defined_insert('add_twitch_notification', [self.twitch_username, self.twitch_user_id, self.discord_channel_id])
         else:
-            return("Error subscribing to twitch service!")
+            return({"status":"error", "code":503, "message":"Error subscribing to twitch service!"})
 
         if(db_status == True):
-            return("Notification successfully added!")
+            return({"status":"success", "code":200, "message":"Notification successfully added!"})
         else:
-            return("Error saving notifiaction to database!")
+            return({"status":"error", "code":503, "message":"Error saving notifiaction to database!"})
 
 
     def delete(self):
         if(self.twitch_user_id == None):
-            return("Twitch username is invalid!")
+            return({"status":"error", "code":400, "message":"Twitch username is invalid!"})
 
         db_status = self.db.defined_delete('delete_twitch_notification', [self.twitch_username, self.twitch_user_id, self.discord_channel_id])
 
         if(db_status == True):
-            return("Notification successfully removed!")
+            return({"status":"success", "code":200, "message":"Notification successfully removed!"})
         else:
-            return("Error removing notifiaction!")
+            return({"status":"error", "code":503, "message":"Error removing notifiaction!"})
 
 
 

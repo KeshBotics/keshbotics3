@@ -27,7 +27,7 @@ class twitch_metrics_username(object):
 
         resp.status = falcon.HTTP_200   # Set response type
         resp.content_type = ['application/json']    # Set content_type
-        resp.body = data
+        resp.body = json.dumps(data)
 
 
 class twitch_metrics_id(object):
@@ -40,4 +40,4 @@ class twitch_metrics_id(object):
 
         resp.status = falcon.HTTP_200   # Set response type
         resp.content_type = ['application/json']    # Set content_type
-        resp.body = data
+        resp.body = json.dumps(data)
