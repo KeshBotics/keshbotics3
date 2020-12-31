@@ -38,11 +38,12 @@ class twitch_cog(commands.Cog):
         elif(action in ['del', 'delete']):
             resp = requests.get(str(os.getenv('API_URL') + "/twitch/manage/delete"), headers=headers)
 
-        if(resp.status_code == 200):
-            await ctx.send(resp.text)
+        data = json.loads(resp.content)
+
+        if(data['message']):
+            await ctx.send(data['message'])
         else:
             await ctx.send('Back-end server error!')
-            # await ctx.send(resp.status_code)
 
 def setup(bot):
     bot.add_cog(twitch_cog(bot))
