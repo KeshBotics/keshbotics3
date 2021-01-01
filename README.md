@@ -1,3 +1,5 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/keshbotics/keshbotics3/badge)](https://www.codefactor.io/repository/github/keshbotics/keshbotics3)
+
 # keshbotics3
 This is the third iteration of the KeshBotics Discord chat bot.
 
@@ -33,7 +35,7 @@ Primary Functionality:
 
   Build:
 
-    docker build -t keshbotics:v3
+    docker build -t keshbotics:v3 .
 
   Run:
 

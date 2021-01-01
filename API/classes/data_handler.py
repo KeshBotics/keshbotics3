@@ -1,6 +1,8 @@
 # Author: @Travis Owens
 # Date: 2020-02-20
-# Description: Misc data retreival functions
+# Description: This is the primary interface for interacting with the database.
+#               The purpose of this class is to create a standardized/modular
+#               method of accessing the database resources.
 
 import pymysql
 import os
@@ -20,10 +22,10 @@ class data_handler(object):
 
 
     def get_connection(self):
-        return(pymysql.connect(host=os.getenv('DB_HOST'),
-                                     user=os.getenv('DB_USER'),
-                                     password=os.getenv('DB_PASS'),
-                                     db=os.getenv('DB_NAME'),
+        return(pymysql.connect(host=os.getenv('DB_HOST').strip("\r"),
+                                     user=os.getenv('DB_USER').strip("\r"),
+                                     password=os.getenv('DB_PASS').strip("\r"),
+                                     db=os.getenv('DB_NAME').strip("\r"),
                                      charset='utf8mb4',
                                      cursorclass=pymysql.cursors.DictCursor))
 
@@ -126,6 +128,23 @@ class data_handler(object):
             return(False)
 
     def update(self, sql, input):
+
+        try:
+            conn = self.get_connection()
+
+            with conn.cursor() as cursor:
+                cursor.execute(sql, input)
+
+            conn.commit()
+            conn.close()
+
+            return(True)
+        except Exception as e:
+            print('data_handler: 4')
+            print(e)
+            return(False)
+
+    def delete(self, sql, input):
 
         try:
             conn = self.get_connection()
