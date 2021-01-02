@@ -7,7 +7,10 @@ from discord.ext import commands
 
 import os
 
+# Create a bot object using the prefix definding the env file
 bot = commands.Bot(command_prefix=os.getenv('COMMAND_PREFIX').strip("\r"))
+# Remove the default help command
+bot.remove_command('help')
 
 @bot.event
 async def on_ready():
@@ -15,26 +18,23 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+
     activity = discord.Game(name="k!help")
     await bot.change_presence(status=discord.Status.online, activity=activity)
 
 @bot.event
 async def on_message(message):
     # Can add things to do before processing command
-
     await bot.process_commands(message)
 
 # Create a list of cogs
 extensions = [  'cogs.owner',
                 'cogs.twitch',
-                'cogs.twitch_history',
                 'cogs.youtube',
-                'cogs.spam',
-                'cogs.guild',
                 'cogs.ping',
-                'cogs.voice',
                 'cogs.purge',
-                'cogs.error_handling'
+                'cogs.error_handling',
+                'cogs.help'
                 ]
 
 # Load the cogs
