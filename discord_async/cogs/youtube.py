@@ -8,7 +8,7 @@ import os
 usage = '<action> <YouTube channel URL>'
 usage_p = os.getenv('COMMAND_PREFIX') + ' ' + usage
 
-class twitch_cog(commands.Cog):
+class youtube_cog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -46,4 +46,4 @@ class twitch_cog(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(twitch_cog(bot))
+    bot.add_cog(youtube_cog(bot))
