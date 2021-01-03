@@ -49,7 +49,7 @@ class owner_cog(commands.Cog):
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def close(self, ctx, *args):
         await self.bot.close()

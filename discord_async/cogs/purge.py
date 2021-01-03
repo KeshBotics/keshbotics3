@@ -8,11 +8,11 @@ purge_description = "This command will purge the defined amount of recent messag
 
 class purge_cog(commands.Cog):
     def __init__(self, bot):
-        
+
         self.bot = bot
 
 
-    @commands.command(name="purge", usage=purge_usage, description=purge_description)
+    @commands.command(name="purge", usage=purge_usage, description="Purge Messages")
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, number_of_messages = None):
 

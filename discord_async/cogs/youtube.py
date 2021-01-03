@@ -5,21 +5,20 @@ import requests
 import json
 import os
 
-usage = '<action> <YouTube channel URL>'
-usage_p = os.getenv('COMMAND_PREFIX') + ' ' + usage
+usage = os.getenv('COMMAND_PREFIX') + '<action (add/del/delete)> <YouTube channel URL>'
 
 class youtube_cog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(usage=usage)
+    @commands.command(usage=usage, description="YouTube Notifications")
     async def youtube(self, ctx, *args):
 
         actions = ['add', 'del', 'delete']
 
         if(len(args) in [0,1]):
-            await ctx.send('Incorrect Arguments! \n ' + usage_p)
+            await ctx.send('Incorrect Arguments! \n ' + usage)
             return
 
         if args[0] not in actions:
