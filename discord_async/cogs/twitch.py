@@ -5,7 +5,7 @@ import requests
 import json
 import os
 
-usage = os.getenv('COMMAND_PREFIX') + '<action (add/del/delete)> <twitch_username>'
+usage = os.getenv('COMMAND_PREFIX') + 'twitch <action (add/del/delete)> <twitch_username>'
 
 class twitch_cog(commands.Cog):
 

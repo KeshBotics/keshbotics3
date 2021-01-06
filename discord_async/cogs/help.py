@@ -18,17 +18,23 @@ class help_cog(commands.Cog):
         # This is created dynamically, however, requires that usage and description
         # variables are set for each command.
 
-        default_help_message = "```"
+        embed = discord.Embed(title="KeshBotics Commands:", colour=discord.Colour(0xd06412))
+        embed.set_author(name="KeshBotics", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/532575955324239882/653f3b3749c3da11947a70881d675160.png")
 
         # bot.commands returns a set of the loaded commands
         for command in self.bot.commands:
             # Some commands are hidden (ie. cogs.owner)
             if command.hidden is False:
-                default_help_message += f"{command.description}: {command.usage}\n"
+                embed.add_field(name=command.description, value=command.usage, inline=False)
 
-        default_help_message += "```"
+        await ctx.send(content="", embed=embed)
 
-        await ctx.send(default_help_message)
+        embed = discord.Embed(title="", colour=discord.Colour(0xd06412))
+        embed.set_author(name="KeshBotics", url="https://discordapp.com", icon_url="")
+
+        embed.add_field(name="Twitch Notifications", value="Channel 1\nChannel 2\n Channel 3", inline=False)
+
+        await ctx.send(content="", embed=embed)
 
 def setup(bot):
     bot.add_cog(help_cog(bot))
