@@ -13,6 +13,7 @@ class twitch_cog(commands.Cog):
         self.bot = bot
 
     @commands.command(usage=usage, description="Twitch Notifications")
+    @commands.has_permissions(manage_messages=True)
     async def twitch(self, ctx, *args):
 
         actions = ['add', 'del', 'delete']

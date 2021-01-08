@@ -13,6 +13,7 @@ class youtube_cog(commands.Cog):
         self.bot = bot
 
     @commands.command(usage=usage, description="YouTube Notifications")
+    @commands.has_permissions(manage_messages=True)
     async def youtube(self, ctx, *args):
 
         actions = ['add', 'del', 'delete']
