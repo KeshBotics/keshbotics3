@@ -29,12 +29,5 @@ class help_cog(commands.Cog):
 
         await ctx.send(content="", embed=embed)
 
-        embed = discord.Embed(title="", colour=discord.Colour(0xd06412))
-        embed.set_author(name="KeshBotics", url="https://discordapp.com", icon_url="")
-
-        embed.add_field(name="Twitch Notifications", value="Channel 1\nChannel 2\n Channel 3", inline=False)
-
-        await ctx.send(content="", embed=embed)
-
 def setup(bot):
     bot.add_cog(help_cog(bot))
