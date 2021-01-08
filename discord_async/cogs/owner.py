@@ -1,7 +1,10 @@
+# Author: @Travis-Owens
+# Date: 2021-01-01
+# Description: These functions are used by the bot owner exclusively.
+#               This cog is typically only used for testing purposes.
 
 import discord
 from discord.ext import commands
-
 
 class owner_cog(commands.Cog):
     def __init__(self, bot):
@@ -46,7 +49,7 @@ class owner_cog(commands.Cog):
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def close(self, ctx, *args):
         await self.bot.close()

@@ -5,22 +5,21 @@ import requests
 import json
 import os
 
-usage = '<action> <twitch_username'
-usage_p = os.getenv('COMMAND_PREFIX') + ' ' + usage
+usage = os.getenv('COMMAND_PREFIX') + 'twitch <action (add/del/delete)> <twitch_username>'
 
 class twitch_cog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(usage=usage)
+    @commands.command(usage=usage, description="Twitch Notifications")
+    @commands.has_permissions(manage_messages=True)
     async def twitch(self, ctx, *args):
 
         actions = ['add', 'del', 'delete']
-        # usage   = 'Usage: ```' + command_prefix + 'twitch <action> <twitch username>``` \n Actions: ' + str(actions)
 
         if(len(args) in [0,1]):
-            await ctx.send('Incorrect Arguments! \n ' + usage_p)
+            await ctx.send('Incorrect Arguments! \n ' + usage)
             return
 
         if args[0] not in actions:

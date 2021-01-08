@@ -1,3 +1,8 @@
+# Author: @Travis-Owens
+# Date: 2021-01-01
+# Description: This cog is currently being "reimagined", and is not available in production.
+#               
+
 import discord
 from discord.ext import commands
 
