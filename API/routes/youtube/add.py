@@ -24,7 +24,7 @@ class youtube_add(object):
             yt_channel_url   = req.get_header('youtube-channel-url')
 
             # If either of the two required headers are missing, return bad request
-            if(disc_channel_id == None or yt_channel_url == None or disc_guild_id == None):
+            if(disc_channel_id is None or yt_channel_url is None or disc_guild_id is None):
                 raise falcon.HTTPBadRequest('Missing Requried Headers', 'Required headers: discord-guild-id, discord-channel-id and youtube-channel-url')
 
             # Using the youtube_management class add the subscription to the database

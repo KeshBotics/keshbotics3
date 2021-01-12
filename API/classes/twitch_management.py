@@ -33,7 +33,7 @@ class twitch_management(object):
         # 5. Insert the notifcation parameters to `twitch_notifications` table
 
         # Check if twitch_user_id is present
-        if(self.twitch_user_id == None):
+        if(self.twitch_user_id is None):
             return({"status":"error", "code":400, "message":"Twitch username is invalid!"})
 
         # Check if notification already exist in the database
@@ -45,7 +45,7 @@ class twitch_management(object):
         subscribe_status = self.twitch.subscribe(self.twitch_user_id)
 
         # Check if the subscription failed
-        if(subscribe_status == False):
+        if not subscribe_status:
             return({"status":"error", "code":503, "message":"Error subscribing to twitch service!"})
 
         # Insert the twitch user and the notification parameters to the database
@@ -55,7 +55,7 @@ class twitch_management(object):
         # Add notification parameters to `twitch_notifications`
         db_status = self.db.insert('INSERT INTO `twitch_notifications` VALUES (%s, %s, %s, %s)', [None, self.twitch_user_id, self.discord_guild_id, self.discord_channel_id])
 
-        if(db_status == True):
+        if db_status:
             return({"status":"success", "code":200, "message":"Notification successfully added!"})
         else:
             return({"status":"error", "code":503, "message":"Error saving notifiaction to database!"})

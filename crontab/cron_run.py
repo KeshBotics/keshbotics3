@@ -19,4 +19,4 @@ while True:
         youtube_subscribe()
         sleep(60*60)
     except Exception as e:
-        pass
+        print(e)

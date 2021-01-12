@@ -24,7 +24,7 @@ class twitch_delete(object):
             discord_guild_id    = req.get_header('discord-guild-id')
 
             # If twitch_username or discord_channel_id are not set then raise exception
-            if(twitch_username == None or discord_channel_id == None or discord_guild_id == None):
+            if(twitch_username is None or discord_channel_id is None or discord_guild_id is None):
                 raise falcon.HTTPBadRequest('Missing Requried Headers', 'Required headers: twitch_username and discord_channel_id')
 
             # Using twitch_management class attempt to add new notifiaction
