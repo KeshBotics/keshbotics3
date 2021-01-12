@@ -19,8 +19,9 @@ class youtube_delete(object):
     def on_get(self, req, resp):
         try:
             # Retrieve the Discord channel ID and the YouTube channel URL from the headers
+            disc_guild_id    = req.get_header('discord_guild_id')
             disc_channel_id  = req.get_header('discord-channel-id')
-            yt_channel_url   = req.get_header('youtube-channel-url')
+            yt_channel_url      = req.get_header('youtube-channel-url')
 
             # If either of the two required headers are missing, return bad request
             if(disc_channel_id == None or yt_channel_url == None):

@@ -28,9 +28,12 @@ class youtube_cog(commands.Cog):
 
         action              = str(args[0])
         youtube_channel_url = str(args[1])
-        discord_channel_id  = str(ctx.channel.id)
 
-        headers = {'auth':os.getenv('API_AUTH_CODE').strip("\r"), 'youtube-channel-url':youtube_channel_url, 'discord-channel-id': discord_channel_id}
+        headers = {'auth':os.getenv('API_AUTH_CODE').strip("\r"),
+                    'youtube-channel-url':youtube_channel_url,
+                    'discord-guild-id':str(ctx.guild.id),
+                    'discord-channel-id': str(ctx.channel.id)
+                    }
 
         if(action == 'add'):
             resp = requests.get(str(os.getenv('API_URL').strip("\r") + "/youtube/manage/add"), headers=headers)
