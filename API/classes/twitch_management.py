@@ -82,7 +82,9 @@ class twitch_management(object):
 
 class twitch_handler(object):
     def __init__(self):
-        self.oauth_token = 'Bearer ' + data_handler().defined_select('twitch_oauth_token',input=None)[0]['setting_value']
+        # Fetch twitch_oauth_token from `settings` DB, and then prepend 'Bearer'
+        twitch_oauth_token = data_handler().select('SELECT `setting_value` FROM `settings` WHERE `setting_key` = "twitch_oauth_token"', None)[0]['setting_value']
+        self.twitch_oauth_token = 'Bearer ' + twitch_oauth_token
 
     def get_twitch_user_id(self, twitch_username):
         # Using twitch helix api: convert twitch_username into twitch_user_id
@@ -90,7 +92,7 @@ class twitch_handler(object):
 
         headers = {
             'client-id': os.getenv('TWITCH_CLIENT_ID').strip("\r"),
-            'Authorization': self.oauth_token
+            'Authorization': self.twitch_oauth_token
         }
 
         resp = requests.get(url, headers=headers)
@@ -107,7 +109,7 @@ class twitch_handler(object):
             headers = {
                         'Content-Type' : 'application/json',
                         'client-id' : os.getenv('TWITCH_CLIENT_ID').strip("\r"),
-                        'Authorization': self.oauth_token
+                        'Authorization': self.twitch_oauth_token
                         }
 
             data = {"hub.mode":mode.lower(),

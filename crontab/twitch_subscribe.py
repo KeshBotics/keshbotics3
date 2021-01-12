@@ -57,7 +57,7 @@ class twitch_subscribe(object):
 
     def db_get_token(self):
 
-        sql = "SELECT `setting_value` FROM `settings` WHERE `setting_key` = 'oauth_token'"
+        sql = "SELECT `setting_value` FROM `settings` WHERE `setting_key` = 'twitch_oauth_token'"
 
         connection = self.get_connection()
 

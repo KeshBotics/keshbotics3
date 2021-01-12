@@ -17,7 +17,7 @@ class data_handler(object):
             'delete_twitch_notification':'DELETE FROM `twitch` WHERE `twitch_username`=%s AND `twitch_user_id`=%s AND `discord_channel_id`=%s',
             'is_streaming':'SELECT `streaming` FROM `twitch` WHERE `twitch_user_id`=%s LIMIT 1',
             'update_is_streaming':'UPDATE `twitch` SET `streaming` =  %s WHERE `twitch_user_id` = %s',
-            'twitch_oauth_token':'SELECT `setting_value` FROM `settings` WHERE `setting_key` = "oauth_token"'
+            'twitch_oauth_token':'SELECT `setting_value` FROM `settings` WHERE `setting_key` = "twitch_oauth_token"'
         }
 
 

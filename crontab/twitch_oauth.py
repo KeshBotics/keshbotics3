@@ -58,7 +58,7 @@ class twitch_oauth(object):
 
     def db_get_token(self):
 
-        sql = "SELECT `setting_value` FROM `settings` WHERE `setting_key` = 'oauth_token'"
+        sql = "SELECT `setting_value` FROM `settings` WHERE `setting_key` = 'twitch_oauth_token'"
 
         connection = self.get_connection()
 
@@ -73,7 +73,7 @@ class twitch_oauth(object):
 
 
     def db_update_token(self, new_token):
-        sql = "UPDATE `settings` SET `setting_value` = %s WHERE `setting_key` = 'oauth_token'"
+        sql = "UPDATE `settings` SET `setting_value` = %s WHERE `setting_key` = 'twitch_oauth_token'"
 
         connection = self.get_connection()
 
