@@ -14,28 +14,46 @@ import os
 from classes.data_handler import data_handler
 
 class twitch_management(object):
-    def __init__(self, twitch_username, discord_channel_id):
+    def __init__(self, twitch_username, discord_guild_id, discord_channel_id):
         self.db     = data_handler()
         self.twitch = twitch_handler()
 
         self.twitch_username    = twitch_username
+        self.discord_guild_id   = discord_guild_id
         self.discord_channel_id = discord_channel_id
         self.twitch_user_id     = self.twitch.get_twitch_user_id(twitch_username)
 
 
     def add(self):
+        # Used to add a new notifcation to the database
+        # 1. Check if Twitch User ID is present
+        # 2. Check if the notifcation already exist
+        # 3. Subscribe to the twitch notifcation webhook
+        # 4. Insert the twitch channel to `twitch_channels` table
+        # 5. Insert the notifcation parameters to `twitch_notifications` table
+
+        # Check if twitch_user_id is present
         if(self.twitch_user_id == None):
             return({"status":"error", "code":400, "message":"Twitch username is invalid!"})
 
-        if(len(self.db.defined_select('unique_twitch_notification', [self.twitch_username, self.discord_channel_id])) != 0):
+        # Check if notification already exist in the database
+        check_notification = self.db.select('SELECT * FROM `twitch_notifications` WHERE `twitch_user_id` = %s AND `discord_channel_id` = %s', [self.twitch_user_id, self.discord_channel_id])
+        if(len(check_notification) != 0):
             return({"status":"error", "code":400, "message":"Notification already exist!"})
 
+        # Subscribe to the Twitch webhook notification
         subscribe_status = self.twitch.subscribe(self.twitch_user_id)
 
-        if(subscribe_status == True):
-            db_status        = self.db.defined_insert('add_twitch_notification', [self.twitch_username, self.twitch_user_id, self.discord_channel_id])
-        else:
+        # Check if the subscription failed
+        if(subscribe_status == False):
             return({"status":"error", "code":503, "message":"Error subscribing to twitch service!"})
+
+        # Insert the twitch user and the notification parameters to the database
+        # Add channel to `twitch_channels` NOTE: This query will result in  pymysql.err.IntegrityError if the twitch
+        # channel ID has been previously added.
+        self.db.insert('INSERT INTO `twitch_channels` VALUES (%s, %s, %s)', [self.twitch_user_id, self.twitch_username, 0])
+        # Add notification parameters to `twitch_notifications`
+        db_status = self.db.insert('INSERT INTO `twitch_notifications` VALUES (%s, %s, %s, %s)', [None, self.twitch_user_id, self.discord_guild_id, self.discord_channel_id])
 
         if(db_status == True):
             return({"status":"success", "code":200, "message":"Notification successfully added!"})
@@ -44,15 +62,21 @@ class twitch_management(object):
 
 
     def delete(self):
+        # Used to remove a notification from the database
+        # 1. Check if Twitch User ID is present
+        # 2. Delete the notifcation from the database
+        # NOTE: Obsolete Twitch channels will be removed via CRON task.
+        # NOTE: Obsolete Twitch webhook subscriptions will expire naturally
+
         if(self.twitch_user_id == None):
             return({"status":"error", "code":400, "message":"Twitch username is invalid!"})
 
-        db_status = self.db.defined_delete('delete_twitch_notification', [self.twitch_username, self.twitch_user_id, self.discord_channel_id])
+        db_status = self.db.delete('DELETE FROM `twitch_notifications` WHERE `twitch_user_id` = %s AND `discord_channel_id` = %s', [self.twitch_user_id, self.discord_channel_id])
 
         if(db_status == True):
             return({"status":"success", "code":200, "message":"Notification successfully removed!"})
         else:
-            return({"status":"error", "code":503, "message":"Error removing notifiaction!"})
+            return({"status":"error", "code":503, "message":"Error removing notification!"})
 
 
 

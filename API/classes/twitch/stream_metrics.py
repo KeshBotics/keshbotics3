@@ -15,7 +15,6 @@ from classes.data_handler import data_handler
 
 class stream_metrics(object):
     def __init__(self):
-        # TODO: Increase clarity and commenting of this class
         pass
 
     def stream_start(self, twitch_user_id):

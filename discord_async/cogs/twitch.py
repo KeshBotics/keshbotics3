@@ -28,9 +28,12 @@ class twitch_cog(commands.Cog):
 
         action          = str(args[0])
         twitch_username = str(args[1])
-        discord_channel_id = str(ctx.channel.id)
 
-        headers = {'auth':os.getenv('API_AUTH_CODE'), 'twitch-username':twitch_username, 'discord-channel-id': discord_channel_id}
+        headers = {'auth':os.getenv('API_AUTH_CODE'),
+                    'twitch-username':twitch_username,
+                    'discord-guild-id': str(ctx.guild.id),
+                    'discord-channel-id': str(ctx.channel.id)
+                  }
 
         if(action == 'add'):
             resp = requests.get(str(os.getenv('API_URL') + "/twitch/manage/add"), headers=headers)

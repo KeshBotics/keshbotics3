@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.6deb5
--- https://www.phpmyadmin.net/
+-- version 4.5.4.1deb2ubuntu2.1
+-- http://www.phpmyadmin.net
 --
--- Host: localhost:3306
--- Generation Time: Oct 20, 2020 at 03:01 PM
--- Server version: 5.7.30-0ubuntu0.18.04.1
--- PHP Version: 7.2.24-0ubuntu0.18.04.6
+-- Host: localhost
+-- Generation Time: Jan 12, 2021 at 08:05 AM
+-- Server version: 5.7.32-0ubuntu0.16.04.1
+-- PHP Version: 7.2.33-1+ubuntu16.04.1+deb.sury.org+1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -43,13 +43,6 @@ CREATE TABLE `settings` (
   `setting_value` text COLLATE utf8_bin
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Dumping data for table `settings`
---
-
-INSERT INTO `settings` (`setting_id`, `setting_key`, `setting_value`) VALUES
-(1, 'oauth_token', '');
-
 -- --------------------------------------------------------
 
 --
@@ -66,15 +59,26 @@ CREATE TABLE `stream_metrics_time` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `twitch`
+-- Table structure for table `twitch_channels`
 --
 
-CREATE TABLE `twitch` (
-  `id` int(11) NOT NULL,
-  `twitch_username` text COLLATE utf8_bin NOT NULL,
-  `twitch_user_id` text COLLATE utf8_bin NOT NULL,
-  `discord_channel_id` text COLLATE utf8_bin NOT NULL,
+CREATE TABLE `twitch_channels` (
+  `twitch_user_id` int(11) NOT NULL,
+  `twitch_username` text COLLATE utf8mb4_bin NOT NULL,
   `streaming` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `twitch_notifications`
+--
+
+CREATE TABLE `twitch_notifications` (
+  `id` int(11) NOT NULL,
+  `twitch_user_id` text COLLATE utf8_bin NOT NULL,
+  `discord_guild_id` text COLLATE utf8_bin,
+  `discord_channel_id` text COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -105,6 +109,12 @@ CREATE TABLE `youtube_submissions` (
 --
 
 --
+-- Indexes for table `cron_event`
+--
+ALTER TABLE `cron_event`
+  ADD PRIMARY KEY (`event_id`);
+
+--
 -- Indexes for table `settings`
 --
 ALTER TABLE `settings`
@@ -117,9 +127,15 @@ ALTER TABLE `stream_metrics_time`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `twitch`
+-- Indexes for table `twitch_channels`
 --
-ALTER TABLE `twitch`
+ALTER TABLE `twitch_channels`
+  ADD PRIMARY KEY (`twitch_user_id`);
+
+--
+-- Indexes for table `twitch_notifications`
+--
+ALTER TABLE `twitch_notifications`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -133,3 +149,41 @@ ALTER TABLE `youtube`
 --
 ALTER TABLE `youtube_submissions`
   ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `cron_event`
+--
+ALTER TABLE `cron_event`
+  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `settings`
+--
+ALTER TABLE `settings`
+  MODIFY `setting_id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `stream_metrics_time`
+--
+ALTER TABLE `stream_metrics_time`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `twitch_notifications`
+--
+ALTER TABLE `twitch_notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `youtube`
+--
+ALTER TABLE `youtube`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `youtube_submissions`
+--
+ALTER TABLE `youtube_submissions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

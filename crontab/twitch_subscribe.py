@@ -12,7 +12,7 @@ class twitch_subscribe(object):
         self.users = self.get_unqiue_twitch_users()
 
         for user in self.users:
-            self.update_subscription('subscribe', user['twitch_user_id'])
+            self.update_subscription('subscribe', str(user['twitch_user_id']))
 
         self.db_log_cron_event()
 
@@ -25,7 +25,7 @@ class twitch_subscribe(object):
                                      cursorclass=pymysql.cursors.DictCursor))
 
     def get_unqiue_twitch_users(self):
-        sql = "SELECT DISTINCT `twitch_user_id` FROM `twitch`"
+        sql = "SELECT DISTINCT `twitch_user_id` FROM `twitch_channels`"
 
         connection = self.get_connection()
 

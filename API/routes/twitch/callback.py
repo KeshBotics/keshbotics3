@@ -42,12 +42,11 @@ class twitch_callback(object):
             if 'user_id' in data['data'][0]:
                 # Twitch user is online
                 twitch_username         = data['data'][0]['user_name']
-                # twitch_user_id          = data['data'][0]['user_id']
                 twitch_thumbnail_url    = data['data'][0]['thumbnail_url']
 
                 # is_streaming resloves an issue with twitch sending multiple stream objects
                 # this prevents duplicate stream notifications
-                is_streaming = data_handler().defined_select("is_streaming", twitch_user_id, False)
+                is_streaming = data_handler().select('SELECT `streaming` FROM `twitch_channels` WHERE `twitch_user_id`=%s', [twitch_user_id])
 
                 if(is_streaming[0]['streaming'] == True):
                     # Streaming notification already sent
@@ -56,15 +55,16 @@ class twitch_callback(object):
                     # Notifcation has not been sent
                     discord_post_obj    = discord_post()
                     message             = discord_post_obj.prepare_twitch_message(twitch_username, twitch_thumbnail_url)
-                    discord_channel_ids = data_handler().defined_select('discord_channels_by_twitch_user_id', [twitch_user_id], True)
+                    discord_channel_ids = data_handler().select('SELECT DISTINCT `discord_channel_id` FROM `twitch_notifications` WHERE `twitch_user_id`=%s', [twitch_user_id])
+                    discord_channel_ids = list(map(lambda x : x['discord_channel_id'], discord_channel_ids)) # FLatten results into a list
 
                     discord_post_obj.post_message(message, discord_channel_ids)
-                    stream_metrics().stream_start(twitch_user_id)
-                    data_handler().defined_update('update_is_streaming', [1, twitch_user_id])
+                    # stream_metrics().stream_start(twitch_user_id)
+                    data_handler().update('UPDATE `twitch_channels` SET `streaming` = %s WHERE `twitch_user_id` = %s', [1, twitch_user_id])
 
 
         except Exception as e:
             resp.body = str(e)
             # twitch user is offline
-            stream_metrics().stream_stop(twitch_user_id)
-            data_handler().defined_update('update_is_streaming', [0, twitch_user_id])
+            # stream_metrics().stream_stop(twitch_user_id)
+            data_handler().update('UPDATE `twitch_channels` SET `streaming` = %s WHERE `twitch_user_id` = %s', [0, twitch_user_id])

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.6deb5
--- https://www.phpmyadmin.net/
+-- version 4.5.4.1deb2ubuntu2.1
+-- http://www.phpmyadmin.net
 --
--- Host: localhost:3306
--- Generation Time: Oct 20, 2020 at 02:58 PM
--- Server version: 5.7.30-0ubuntu0.18.04.1
--- PHP Version: 7.2.24-0ubuntu0.18.04.6
+-- Host: localhost
+-- Generation Time: Jan 12, 2021 at 07:56 AM
+-- Server version: 5.7.32-0ubuntu0.16.04.1
+-- PHP Version: 7.2.33-1+ubuntu16.04.1+deb.sury.org+1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -23,15 +23,14 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `twitch`
+-- Table structure for table `twitch_notifications`
 --
 
-CREATE TABLE `twitch` (
+CREATE TABLE `twitch_notifications` (
   `id` int(11) NOT NULL,
-  `twitch_username` text COLLATE utf8_bin NOT NULL,
   `twitch_user_id` text COLLATE utf8_bin NOT NULL,
-  `discord_channel_id` text COLLATE utf8_bin NOT NULL,
-  `streaming` tinyint(1) NOT NULL DEFAULT '0'
+  `discord_guild_id` text COLLATE utf8_bin,
+  `discord_channel_id` text COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
@@ -39,9 +38,9 @@ CREATE TABLE `twitch` (
 --
 
 --
--- Indexes for table `twitch`
+-- Indexes for table `twitch_notifications`
 --
-ALTER TABLE `twitch`
+ALTER TABLE `twitch_notifications`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -49,9 +48,9 @@ ALTER TABLE `twitch`
 --
 
 --
--- AUTO_INCREMENT for table `twitch`
+-- AUTO_INCREMENT for table `twitch_notifications`
 --
-ALTER TABLE `twitch`
+ALTER TABLE `twitch_notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
