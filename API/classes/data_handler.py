@@ -11,13 +11,13 @@ class data_handler(object):
     def __init__(self):
 
         self.defined_queries = {
-            'discord_channels_by_twitch_user_id':'SELECT DISTINCT `discord_channel_id` FROM `twitch` WHERE `twitch_user_id`=%s',
-            'unique_twitch_notification':'SELECT * FROM `twitch` WHERE `twitch_username` = %s  AND `discord_channel_id` = %s',
+            'discord_channels_by_twitch_user_id':'SELECT DISTINCT `discord_channel_id` FROM `twitch_notifications` WHERE `twitch_user_id`=%s',
+            'unique_twitch_notification':'SELECT * FROM `twitch_notifications` WHERE `twitch_username` = %s  AND `discord_channel_id` = %s',
             'add_twitch_notification':'INSERT INTO `twitch` VALUES(null,%s,%s,%s,0)',
             'delete_twitch_notification':'DELETE FROM `twitch` WHERE `twitch_username`=%s AND `twitch_user_id`=%s AND `discord_channel_id`=%s',
             'is_streaming':'SELECT `streaming` FROM `twitch` WHERE `twitch_user_id`=%s LIMIT 1',
             'update_is_streaming':'UPDATE `twitch` SET `streaming` =  %s WHERE `twitch_user_id` = %s',
-            'twitch_oauth_token':'SELECT `setting_value` FROM `settings` WHERE `setting_key` = "oauth_token"'
+            'twitch_oauth_token':'SELECT `setting_value` FROM `settings` WHERE `setting_key` = "twitch_oauth_token"'
         }
 
 

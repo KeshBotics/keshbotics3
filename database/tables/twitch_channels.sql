@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 12, 2021 at 09:05 AM
+-- Generation Time: Jan 12, 2021 at 07:55 AM
 -- Server version: 5.7.32-0ubuntu0.16.04.1
 -- PHP Version: 7.2.33-1+ubuntu16.04.1+deb.sury.org+1
 
@@ -23,34 +23,25 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `settings`
+-- Table structure for table `twitch_channels`
 --
 
-CREATE TABLE `settings` (
-  `setting_id` int(11) NOT NULL,
-  `setting_key` text COLLATE utf8_bin,
-  `setting_value` text COLLATE utf8_bin
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+CREATE TABLE `twitch_channels` (
+  `twitch_user_id` int(11) NOT NULL,
+  `twitch_username` text COLLATE utf8mb4_bin NOT NULL,
+  `streaming` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `settings`
+-- Indexes for table `twitch_channels`
 --
-ALTER TABLE `settings`
-  ADD PRIMARY KEY (`setting_id`);
+ALTER TABLE `twitch_channels`
+  ADD PRIMARY KEY (`twitch_user_id`);
 
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `settings`
---
-ALTER TABLE `settings`
-  MODIFY `setting_id` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

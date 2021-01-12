@@ -18,7 +18,7 @@ class youtube_management(object):
         # Object for interacting with the database
         self.data_handler = data_handler()
 
-    def subscribe(self, yt_channel_url, disc_channel_id):
+    def subscribe(self, yt_channel_url, disc_guild_id, disc_channel_id):
         # Use the youtube_channel_id class to determine the YouTube channel ID
         # for the given URL.
 
@@ -35,7 +35,7 @@ class youtube_management(object):
             return({"status":"error", "code":400, "message":"Notification already exist!"})
 
         # Add notifcation to local databse
-        database_status = self.manage_databse_subscription("subscribe", yt_channel_id, disc_channel_id)
+        database_status = self.manage_databse_subscription("subscribe", yt_channel_id, disc_channel_id, disc_guild_id)
 
         # Check if the local database insertion
         if database_status is False:
@@ -68,7 +68,7 @@ class youtube_management(object):
             return({"status":"error", "code":400, "message":"Error unable to parse the URL!"})
 
         # Remove the yt_channel and disc_channel_id combination from the database
-        database_status = self.manage_databse_subscription("unsubscribe", yt_channel_id, disc_channel_id)
+        database_status = self.manage_databse_subscription("unsubscribe", yt_channel_id, disc_channel_id, None)
 
         # Ignore unsubscribing from the YouTube webhook, the lease will automatically expire,
         # and unsubscribing could create unintended results
@@ -96,16 +96,17 @@ class youtube_management(object):
         else:
             return(True)
 
-    def manage_databse_subscription(self, mode, yt_channel_id, disc_channel_id):
+    def manage_databse_subscription(self, mode, yt_channel_id, disc_channel_id, disc_guild_id = None):
         # This function will add(INSERT) or delete(DELETE) subscriptions to/from the database.
 
-        values = [yt_channel_id, disc_channel_id]
         try:
             if(mode == "subscribe"):
-                sql = "INSERT INTO `youtube` VALUES(NULL, %s, %s)"
+                values = [yt_channel_id, disc_guild_id, disc_channel_id]
+                sql = "INSERT INTO `youtube` VALUES(NULL, %s, %s, %s)"
                 res = self.data_handler.insert(sql, values)
 
             elif(mode == "unsubscribe"):
+                values = [yt_channel_id, disc_channel_id]
                 sql = "DELETE FROM `youtube` WHERE `yt_channel_id` = %s AND `disc_channel_id` = %s"
                 res = self.data_handler.delete(sql, values)
 
@@ -135,7 +136,7 @@ class youtube_management(object):
             # Currently, no headers are required.
             headers= {}
 
-            # TODO: Figure out a better solution
+            # NOTE:  Figure out a better solution
             # timeout =1.xx is 100% a hack. Falcon only supports a single simultaneous
             # connection, the pubsubhubbub attemtps to reach /youtube/callback, however,
             # this current API request is blocking Falcon from responding.
@@ -143,11 +144,10 @@ class youtube_management(object):
             # and that the pubsubhubbub is able to reach the callback.
             response = requests.post(url, headers=headers, data = payload, timeout=1.0000000001)
 
-            print(response.content)
             return(True)
 
         except requests.exceptions.ReadTimeout:
-            # TODO: See above
+            # NOTE: See above
             return(True)
         except Exception as e:
             print("manage_webhook_subscription: " + str(e))

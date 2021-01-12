@@ -18,13 +18,14 @@ class twitch_add(object):
             # Retrieve twitch_username and discrod_channel_id from headers
             twitch_username     = req.get_header('twitch-username')
             discord_channel_id  = req.get_header('discord-channel-id')
+            discord_guild_id    = req.get_header('discord-guild-id')
 
             # If twitch_username or discord_channel_id are not set then raise exception
-            if(twitch_username == None or discord_channel_id == None):
+            if(twitch_username is None or discord_channel_id is None or discord_guild_id is None):
                 raise falcon.HTTPBadRequest('Missing Requried Headers', 'Required headers: twitch-username and discord-channel-id')
 
             # Using twitch_management class attempt to add new notifiaction
-            message = twitch_management(twitch_username, discord_channel_id).add()
+            message = twitch_management(twitch_username, discord_guild_id, discord_channel_id).add()
 
             resp.status = falcon.get_http_status(message['code'])
             resp.content_type = ['application/json']
