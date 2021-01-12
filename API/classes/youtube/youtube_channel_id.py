@@ -97,7 +97,7 @@ class youtube_channel_id(object):
 
         data = requests.get("https://www.googleapis.com/youtube/v3/search?part=id%2Csnippet&q=" + channel + "&type=channel&key=" + os.getenv('GCP_API_KEY').strip("\r"))
 
-        data = json.loads(data.content)
+        data = json.loads(data.content.decode('utf-8'))
 
         channel_id = data['items'][0]['id']['channelId']
 
