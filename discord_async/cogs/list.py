@@ -23,9 +23,9 @@ class notification_list_cog(commands.Cog):
 
         # Define supported platforms
         platforms = ['twitch', 'youtube']
-        if platform is not None and platform.lower() in platforms:
+        if platform.lower() not in platforms:
             # If provided platform doesn't exist, revert to displaying all notifications
-            platfrom = None
+            platform = None
 
         # Route requires, headers auth and discord-channel-id
         headers = {
@@ -50,11 +50,11 @@ class notification_list_cog(commands.Cog):
         embed.set_author(name="KeshBotics Notifications", url="", icon_url="https://cdn.discordapp.com/avatars/532575955324239882/653f3b3749c3da11947a70881d675160.png")
 
         # Add field for Twitch Notifications
-        if(platform == 'twitch' or platform is None):
+        if(platform is None or platform.lower() == 'twitch' ):
             embed.add_field(name="Twitch", value=notification_strings().get_twitch_str(data[str(ctx.channel.id)]['twitch']), inline=False)
 
         # Add field for YouTube Notifications
-        if(platform == 'youtube' or platform is None):
+        if(platform is None or platform.lower() == 'youtube' ):
             embed.add_field(name="YouTube", value=notification_strings().get_youtube_str(data[str(ctx.channel.id)]['youtube']), inline=False)
 
         await ctx.send(content="", embed=embed)
