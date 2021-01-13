@@ -26,7 +26,11 @@ from routes.youtube.callback import youtube_callback
 from routes.youtube.add      import youtube_add
 from routes.youtube.delete   import youtube_delete
 
+# Twitter API routes
 from routes.twitter.callback import twitter_callback
+
+# Notifications API routes
+from routes.notifications.notifications import get_notificaitons
 
 # Routes for web interface
 from routes.web.discord.auth_callback import discord_auth_callback
@@ -53,10 +57,11 @@ class public_facing_api(object):
             {'route':'/youtube/manage/add',     'class': youtube_add()},
             {'route':'/youtube/manage/delete',  'class': youtube_delete()},
             {'route':'/test',   'class': test()},
+            {'route':'/notifications',   'class': get_notificaitons()},
             {'route':'/twitter/callback', 'class': twitter_callback()},
-            {'route':'/', 'class':root()},
             {'route':'/v1/web/discord/auth/callback', 'class':discord_auth_callback()},
-            {'route':'/v1/web/discord/auth/validate', 'class':discord_auth_validate()}
+            {'route':'/v1/web/discord/auth/validate', 'class':discord_auth_validate()},
+            {'route':'/', 'class':root()},
 
         ]
 
