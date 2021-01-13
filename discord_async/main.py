@@ -33,7 +33,8 @@ extensions = [  'cogs.owner',
                 'cogs.youtube',
                 'cogs.purge',
                 'cogs.error_handling',
-                'cogs.help'
+                'cogs.help',
+                'cogs.list'
                 ]
 
 # Load the cogs
