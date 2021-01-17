@@ -23,7 +23,7 @@ class notification_list_cog(commands.Cog):
 
         # Define supported platforms
         platforms = ['twitch', 'youtube']
-        if platform.lower() not in platforms:
+        if(platform is not None and platform.lower() not in platforms):
             # If provided platform doesn't exist, revert to displaying all notifications
             platform = None
 
