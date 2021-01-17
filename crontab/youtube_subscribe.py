@@ -44,7 +44,7 @@ class youtube_subscribe(object):
             # Currently, no headers are required.
             headers= {}
 
-            # TODO: Figure out a better solution
+            # NOTE: Figure out a better solution
             # timeout =1.xx is 100% a hack. Falcon only supports a single simultaneous
             # connection, the pubsubhubbub attemtps to reach /youtube/callback, however,
             # this current API request is blocking Falcon from responding.
@@ -52,11 +52,7 @@ class youtube_subscribe(object):
             # and that the pubsubhubbub is able to reach the callback.
             response = requests.post(url, headers=headers, data = payload, timeout=1.0000000001)
 
-            print(response.content)
-            return(True)
-
         except requests.exceptions.ReadTimeout:
-            print("timeout")
             return(True)
         except Exception as e:
             print("manage_webhook_subscription: " + str(e))
@@ -78,5 +74,3 @@ class youtube_subscribe(object):
                                      db=os.getenv('DB_NAME').strip("\r"),
                                      charset='utf8mb4',
                                      cursorclass=pymysql.cursors.DictCursor))
-
-youtube_subscribe()

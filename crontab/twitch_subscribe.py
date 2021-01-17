@@ -1,6 +1,6 @@
 # Author: @Travis-Owens
 # Date:  2020-02-19
-# Description: Subribes to twitch webhook
+# Description: Subribes to twitch webhook events. 'helix/streams' and 'helix/users'
 
 import pymysql
 import requests
@@ -9,11 +9,14 @@ import os
 
 class twitch_subscribe(object):
     def __init__(self):
+        # Retrieves a unique list of of twitch user ID's from the 'twitch_channels' table
         self.users = self.get_unqiue_twitch_users()
 
+        # Update both webhook subscriptions for each user ID
         for user in self.users:
-            self.update_subscription('subscribe', str(user['twitch_user_id']))
+            self.update_subscription(str(user['twitch_user_id']))
 
+        # Adds an entry to the database indicating that this task is active
         self.db_log_cron_event()
 
     def get_connection(self):
@@ -35,25 +38,32 @@ class twitch_subscribe(object):
         return(cursor.fetchall())
 
 
-    def update_subscription(self, mode, twitch_user_id):
-        if(mode.lower() == 'subscribe' or mode.lower() == 'unsubscribe'):
+    def update_subscription(self, twitch_user_id):
 
-            twitch_oauth_token = 'Bearer ' + self.db_get_token()
+        # Get the oauth token from the DB and prepend 'Bearer'
+        twitch_oauth_token = 'Bearer ' + self.db_get_token()
 
-            headers = {'Content-Type' : 'application/json', 'Client-ID' : os.getenv('TWITCH_CLIENT_ID'), 'Authorization':twitch_oauth_token}
-            data = {"hub.mode":mode.lower(),
-                "hub.topic":str("https://api.twitch.tv/helix/streams?user_id=" + twitch_user_id),
-                "hub.callback":str(os.getenv('WEBHOOK_CALLBACK') + "/" + twitch_user_id),
+        # Headers and data required for creating/updating a subscription to a Twitch webhook event
+        # 'hub.topic' and 'hub.callback' are set accordingly for each request ('streams' and 'users')
+        # '864000' is the maximum allowed time for a lease (240 hours).
+        headers = {'Content-Type' : 'application/json', 'Client-ID' : os.getenv('TWITCH_CLIENT_ID'), 'Authorization':twitch_oauth_token}
+        data = {"hub.mode":"subscribe",
+                "hub.topic":None,
+                "hub.callback":None,
                 "hub.lease_seconds":"864000",
-                "hub.secret":"top_secret",}
+                "hub.secret":"top_secret"
+                }
 
-            r = requests.post('https://api.twitch.tv/helix/webhooks/hub', data=json.dumps(data), headers=headers)
+        # Subscribe to the 'helix/streams' endpoint, used for stream notifications
+        data["hub.topic"]    = str("https://api.twitch.tv/helix/streams?user_id=" + twitch_user_id)
+        data["hub.callback"] = str(os.getenv('API_URL') + "/twitch/callback/streams/" + twitch_user_id)
+        r = requests.post('https://api.twitch.tv/helix/webhooks/hub', data=json.dumps(data), headers=headers)
 
-            if(r.status_code == 202):
-                return(True)
-            else:
-                print(r.content)
-                return(False)
+        # Subscribe to the 'helix/users' endpoint, used for tracking username changes
+        data["hub.topic"]    = str("https://api.twitch.tv/helix/users?id=" + twitch_user_id)
+        data["hub.callback"] = str(os.getenv('API_URL') + "/twitch/callback/users/" + twitch_user_id)
+        r = requests.post('https://api.twitch.tv/helix/webhooks/hub', data=json.dumps(data), headers=headers)
+
 
     def db_get_token(self):
 

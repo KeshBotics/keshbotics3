@@ -12,10 +12,10 @@
 #
 #               In some cases, Twitch will send multiple notifications about a
 #               single live stream. This class attempts to mitigate sending the
-#               same notifcation multiple times.
+#               same notification multiple times.
 
 # Related Routes:
-# - /twitch/callback/{twitch_user_id}
+# - /twitch/callback/streams/{twitch_user_id}
 
 import falcon
 import json
@@ -24,7 +24,7 @@ from classes.discord_post import discord_post
 from classes.data_handler import data_handler
 from classes.twitch.stream_metrics import stream_metrics
 
-class twitch_callback(object):
+class twitch_callback_streams(object):
     def __init__(self):
         pass
 
