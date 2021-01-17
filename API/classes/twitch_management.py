@@ -78,6 +78,10 @@ class twitch_management(object):
         else:
             return({"status":"error", "code":503, "message":"Error removing notification!"})
 
+    def update_user(self, twitch_user_id, twitch_display_name):
+        # Used to updated twitch_usernames
+        sql = "UPDATE `twitch_channels` SET `twitch_username` = %s WHERE `twitch_user_id` = %s"
+        db_status = self.db.update(sql, [twitch_display_name, twitch_user_id])
 
 
 class twitch_handler(object):
@@ -114,7 +118,7 @@ class twitch_handler(object):
 
             data = {"hub.mode":mode.lower(),
                 "hub.topic":str("https://api.twitch.tv/helix/streams?user_id=" + twitch_user_id),
-                "hub.callback":str(os.getenv('WEBHOOK_CALLBACK') + "/" + twitch_user_id),
+                "hub.callback":str(os.getenv('API_URL') + "/twitch/callback/streams/" + twitch_user_id),
                 "hub.lease_seconds":"864000",
                 "hub.secret":"top_secret",}
 

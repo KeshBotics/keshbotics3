@@ -18,7 +18,8 @@ from routes.test            import test
 # Twitch API routes
 from routes.twitch.add      import twitch_add
 from routes.twitch.delete   import twitch_delete
-from routes.twitch.callback import twitch_callback
+from routes.twitch.callback.streams import twitch_callback_streams
+from routes.twitch.callback.users   import twitch_callback_users
 import routes.twitch.metrics as metrics
 
 # YouTube API routes
@@ -49,8 +50,8 @@ class public_facing_api(object):
         self.routes = [
             {'route':'/twitch/manage/add',                  'class': twitch_add()},
             {'route':'/twitch/manage/delete',               'class': twitch_delete()},
-            {'route':'/twitch/callback',                    'class': twitch_callback()},
-            {'route':'/twitch/callback/{twitch_user_id}',   'class': twitch_callback()},
+            {'route':'/twitch/callback/streams/{twitch_user_id}',   'class': twitch_callback_streams()},
+            {'route':'/twitch/callback/users/{twitch_user_id}',     'class': twitch_callback_users()},
             {'route':'/twitch/metrics/{twitch_username}',   'class': metrics.twitch_metrics_username()},
             {'route':'/twitch/metrics/id/{twitch_user_id}', 'class': metrics.twitch_metrics_id()},
             {'route':'/youtube/callback', 'class': youtube_callback()},
