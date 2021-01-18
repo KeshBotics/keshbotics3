@@ -18,7 +18,7 @@ class youtube_management(object):
         # Object for interacting with the database
         self.data_handler = data_handler()
 
-    def subscribe(self, yt_channel_url, disc_guild_id, disc_channel_id):
+    def subscribe(self, yt_channel_url, discord_guild_id, discord_channel_id):
         # Use the youtube_channel_id class to determine the YouTube channel ID
         # for the given URL.
 
@@ -29,13 +29,13 @@ class youtube_management(object):
         if yt_channel_id is None:
             return({"status":"error", "code":400, "message":"Error unable to parse the URL!"})
 
-        # Check if the yt_channel_id and disc_channel_id combination are unqiue.
-        if(self.check_if_exist(yt_channel_id, disc_channel_id)):
+        # Check if the yt_channel_id and discord_channel_id combination are unqiue.
+        if(self.check_if_exist(yt_channel_id, discord_channel_id)):
             # The subscription to the YouTube channel in the Discord channel already exist.
             return({"status":"error", "code":400, "message":"Notification already exist!"})
 
         # Add notifcation to local databse
-        database_status = self.manage_databse_subscription("subscribe", yt_channel_id, disc_channel_id, disc_guild_id)
+        database_status = self.manage_databse_subscription("subscribe", yt_channel_id, discord_channel_id, discord_guild_id)
 
         # Check if the local database insertion
         if database_status is False:
@@ -43,7 +43,6 @@ class youtube_management(object):
             return({"status":"error", "code":503, "message":"Error internal database failure!"})
 
         # Subscribe to the webhook for the given channel
-        # # TODO: figure out timing issue
         subscribe_status = self.manage_webhook_subscription("subscribe", yt_channel_id)
 
         # Check if the YouTube API subscription was successful
@@ -56,7 +55,7 @@ class youtube_management(object):
 
         return({"status":"success", "code":200, "message":"Notification successfully added!"})
 
-    def unsubscribe(self, yt_channel_url, disc_channel_id):
+    def unsubscribe(self, yt_channel_url, discord_channel_id):
         # Use the youtube_channel_id class to determine the YouTube channel ID
         # for the given URL.
 
@@ -67,8 +66,8 @@ class youtube_management(object):
         if yt_channel_id is None:
             return({"status":"error", "code":400, "message":"Error unable to parse the URL!"})
 
-        # Remove the yt_channel and disc_channel_id combination from the database
-        database_status = self.manage_databse_subscription("unsubscribe", yt_channel_id, disc_channel_id, None)
+        # Remove the yt_channel and discord_channel_id combination from the database
+        database_status = self.manage_databse_subscription("unsubscribe", yt_channel_id, discord_channel_id, None)
 
         # Ignore unsubscribing from the YouTube webhook, the lease will automatically expire,
         # and unsubscribing could create unintended results
@@ -80,14 +79,14 @@ class youtube_management(object):
             return({"status":"success", "code":200, "message":"Notification successfully removed!"})
 
 
-    def check_if_exist(self, yt_channel_id, disc_channel_id):
-        # If the yt_channel_id and disc_channel_id already exist in the database
+    def check_if_exist(self, yt_channel_id, discord_channel_id):
+        # If the yt_channel_id and discord_channel_id already exist in the database
         # this function will return True, else it will return False.
 
         # Using data_handler class, create a SELECT query to find if the variable
         # combination exist.
-        sql     = "SELECT * FROM `youtube` WHERE `yt_channel_id` = %s AND `disc_channel_id` = %s"
-        values  = [yt_channel_id, disc_channel_id]
+        sql     = "SELECT * FROM `youtube_notifications` WHERE `yt_channel_id` = %s AND `discord_channel_id` = %s"
+        values  = [yt_channel_id, discord_channel_id]
         resp    = self.data_handler.select(sql, values)
 
         if(len(resp) == 0):
@@ -96,18 +95,18 @@ class youtube_management(object):
         else:
             return(True)
 
-    def manage_databse_subscription(self, mode, yt_channel_id, disc_channel_id, disc_guild_id = None):
+    def manage_databse_subscription(self, mode, yt_channel_id, discord_channel_id, discord_guild_id = None):
         # This function will add(INSERT) or delete(DELETE) subscriptions to/from the database.
 
         try:
             if(mode == "subscribe"):
-                values = [yt_channel_id, disc_guild_id, disc_channel_id]
-                sql = "INSERT INTO `youtube` VALUES(NULL, %s, %s, %s)"
+                values = [yt_channel_id, discord_guild_id, discord_channel_id]
+                sql = "INSERT INTO `youtube_notifications` VALUES(NULL, %s, %s, %s)"
                 res = self.data_handler.insert(sql, values)
 
             elif(mode == "unsubscribe"):
-                values = [yt_channel_id, disc_channel_id]
-                sql = "DELETE FROM `youtube` WHERE `yt_channel_id` = %s AND `disc_channel_id` = %s"
+                values = [yt_channel_id, discord_channel_id]
+                sql = "DELETE FROM `youtube_notifications` WHERE `yt_channel_id` = %s AND `discord_channel_id` = %s"
                 res = self.data_handler.delete(sql, values)
 
             else:
