@@ -34,7 +34,8 @@ extensions = [  'cogs.owner',
                 'cogs.purge',
                 'cogs.error_handling',
                 'cogs.help',
-                'cogs.list'
+                'cogs.list',
+                'cogs.events'
                 ]
 
 # Load the cogs

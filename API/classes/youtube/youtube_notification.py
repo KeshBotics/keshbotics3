@@ -87,7 +87,7 @@ class youtube_notification(object):
                 "color": 9442302,
                 "timestamp": "",
                 "footer": {
-                  "icon_url": "https://cdn.discordapp.com/avatars/368199725771390977/c9d101f88d0951730b482c5dcc45f075.png?size=256",
+                  "icon_url": "https://cdn.discordapp.com/avatars/532575955324239882/653f3b3749c3da11947a70881d675160.png?size=256",
                   "text": "KeshBotics"
                 },
                 "thumbnail": {
@@ -99,7 +99,7 @@ class youtube_notification(object):
                 "author": {
                   "name": yt_video_author,
                   "url": "https://www.youtube.com/watch?v=" + yt_video_id,
-                  "icon_url": "https://cdn.discordapp.com/avatars/368199725771390977/c9d101f88d0951730b482c5dcc45f075.png?size=256"
+                  "icon_url": "https://cdn.discordapp.com/avatars/532575955324239882/653f3b3749c3da11947a70881d675160.png?size=256"
                 },
                 "fields": [
                           {

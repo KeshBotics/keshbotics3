@@ -45,3 +45,25 @@ class notifications(object):
             return(None)
 
         return(youtube_channel_ids)
+
+    def delete_by_discord_channel_id(self, discord_channel_id):
+        # Delete notifications associated with the given discord_channel_id
+
+        # Delete from `twitch_notifications`
+        sql = "DELETE FROM `twitch_notifications` WHERE `discord_channel_id` = %s"
+        self.db.delete(sql, [discord_channel_id])
+
+        # Delete from `youtube_notifications`
+        sql = "DELETE FROM `youtube` WHERE `disc_channel_id` =  %s"
+        self.db.delete(sql, [discord_channel_id])
+
+    def delete_by_discord_guild_id(self, discord_guild_id):
+        # Delete notifications associated with the given discord_guild_id
+
+        # Delete from `twitch_notifications`
+        sql = "DELETE FROM `twitch_notifications` WHERE `discord_guild_id` = %s"
+        self.db.delete(sql, [discord_guild_id])
+
+        # Delete from `youtube_notifications`
+        sql = "DELETE FROM `youtube` WHERE `disc_guild_id` = %s"
+        self.db.delete(sql, [discord_guild_id])
