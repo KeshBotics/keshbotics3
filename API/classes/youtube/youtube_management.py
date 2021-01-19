@@ -180,24 +180,24 @@ class youtube_management(object):
         # will return the data in a dictionary format (the raw snippet data). If a string is passed, this
         # function will only return the channel's display name (string).
 
-        if type(yt_channel_id) is list:
+        if isinstance(yt_channel_id, list):
             # convert list into string with values seperated by a comma
             # /youtube/v3/channels endpoint supports using a list of channel IDs.
-            id = ",".join(yt_channel_id)
+            channel_id = ",".join(yt_channel_id)
         else:
-            id = yt_channel_id
+            channel_id = yt_channel_id
 
         try:
             # Use the Google API to retreive the 'snippet' for the provided yt_channel_id
-            data = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=" + id + "&key=" + os.getenv('GCP_API_KEY').strip("\r"))
+            data = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=" + channel_id + "&key=" + os.getenv('GCP_API_KEY').strip("\r"))
             data = json.loads(data.content.decode('utf-8'))
 
-            if type(yt_channel_id) is list:
+            if isinstance(yt_channel_id, list):
                 # Return the snippet data for all requested channel IDs
                 return(data)
-            else:
-                # Return the string value of the 'title' field
-                return(data['items'][0]['snippet']['title'])
+
+            # Else, return the string value of the 'title' field (single yt_channel_id in argument)
+            return(data['items'][0]['snippet']['title'])
 
         except Exception as e:
             # Failed to retreive the youtube channel name
