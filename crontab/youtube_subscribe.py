@@ -8,12 +8,15 @@ import requests
 
 class youtube_subscribe(object):
     def __init__(self):
-        # A list of unique YouTube channel IDs from the database
-        youtube_channel_ids = self.get_channel_ids()
+        # # A list of unique YouTube channel IDs from the database
+        # youtube_channel_ids = self.get_channel_ids()
+        #
+        # # Iterate over the list of channel IDs and re-subscribe to the webhook
+        # for channel_id in youtube_channel_ids:
+        #     self.manage_webhook_subscription("subscribe", channel_id['yt_channel_id'])
 
-        # Iterate over the list of channel IDs and re-subscribe to the webhook
-        for channel_id in youtube_channel_ids:
-            self.manage_webhook_subscription("subscribe", channel_id['yt_channel_id'])
+        # Moved to API 2021-01-18
+        r = requests.put(str(os.getenv("API_URL") + '/youtube/update'), headers={'auth':os.getenv('API_AUTH_CODE')}, data={} )
 
     def get_channel_ids(self):
         sql = "SELECT DISTINCT `yt_channel_id` FROM `youtube`"

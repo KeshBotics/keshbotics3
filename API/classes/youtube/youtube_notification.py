@@ -69,12 +69,12 @@ class youtube_notification(object):
     def get_discord_channel_ids(self, yt_channel_id):
         # This function will search the databse for discord_channel_ids that have subscribed to yt_channel_id
 
-        sql     = "SELECT `disc_channel_id` FROM `youtube` WHERE `yt_channel_id` = %s"
+        sql     = "SELECT `discord_channel_id` FROM `youtube_notifications` WHERE `yt_channel_id` = %s"
         values  = [yt_channel_id]
         data    = data_handler().select(sql, values)
 
-        # Flatten the dict to only the keys (disc_channel_id)
-        return(list(map(lambda x : x['disc_channel_id'], data)))
+        # Flatten the dict to only the keys (discord_channel_id)
+        return(list(map(lambda x : x['discord_channel_id'], data)))
 
     def prepare_discord_message(self, yt_video_id, yt_video_author, yt_video_title):
         # Embeded message for Discord

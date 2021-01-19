@@ -23,22 +23,23 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `youtube_submissions`
+-- Table structure for table `youtube_channels`
 --
 
-CREATE TABLE `youtube_submissions` (
+CREATE TABLE `youtube_channels` (
   `id` int(11) NOT NULL,
-  `yt_video_id` text COLLATE utf8_bin NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  `yt_channel_id` text COLLATE utf8mb4_bin NOT NULL,
+  `yt_display_name` text COLLATE utf8mb4_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `youtube_submissions`
+-- Indexes for table `youtube_channels`
 --
-ALTER TABLE `youtube_submissions`
+ALTER TABLE `youtube_channels`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -46,9 +47,9 @@ ALTER TABLE `youtube_submissions`
 --
 
 --
--- AUTO_INCREMENT for table `youtube_submissions`
+-- AUTO_INCREMENT for table `youtube_channels`
 --
-ALTER TABLE `youtube_submissions`
+ALTER TABLE `youtube_channels`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

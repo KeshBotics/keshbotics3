@@ -10,6 +10,9 @@ from twitch_oauth import twitch_oauth
 from twitch_subscribe import twitch_subscribe
 from youtube_subscribe import youtube_subscribe
 
+# Wait for API to start
+sleep(30)
+
 while True:
     try:
         twitch_oauth()                  # Updates the oauth token for the Twitch API

@@ -26,6 +26,7 @@ import routes.twitch.metrics as metrics
 from routes.youtube.callback import youtube_callback
 from routes.youtube.add      import youtube_add
 from routes.youtube.delete   import youtube_delete
+from routes.youtube.update   import youtube_update
 
 # Twitter API routes
 from routes.twitter.callback import twitter_callback
@@ -57,6 +58,7 @@ class public_facing_api(object):
             {'route':'/youtube/callback', 'class': youtube_callback()},
             {'route':'/youtube/manage/add',     'class': youtube_add()},
             {'route':'/youtube/manage/delete',  'class': youtube_delete()},
+            {'route':'/youtube/update',         'class': youtube_update()},
             {'route':'/test',   'class': test()},
             {'route':'/notifications',   'class': get_notificaitons()},
             {'route':'/twitter/callback', 'class': twitter_callback()},
