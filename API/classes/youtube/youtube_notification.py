@@ -73,8 +73,8 @@ class youtube_notification(object):
         values  = [yt_channel_id]
         data    = data_handler().select(sql, values)
 
-        # Flatten the dict to only the keys (disc_channel_id)
-        return(list(map(lambda x : x['disc_channel_id'], data)))
+        # Flatten the dict to only the keys (discord_channel_id)
+        return(list(map(lambda x : x['discord_channel_id'], data)))
 
     def prepare_discord_message(self, yt_video_id, yt_video_author, yt_video_title):
         # Embeded message for Discord

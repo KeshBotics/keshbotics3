@@ -9,6 +9,7 @@
 
 import requests
 import os
+import json
 
 from classes.data_handler import data_handler
 from classes.youtube.youtube_channel_id import youtube_channel_id
@@ -35,7 +36,8 @@ class youtube_management(object):
             return({"status":"error", "code":400, "message":"Notification already exist!"})
 
         # Add notifcation to local databse
-        database_status = self.manage_databse_subscription("subscribe", yt_channel_id, discord_channel_id, discord_guild_id)
+        yt_display_name = self.get_display_name(yt_channel_id)
+        database_status = self.manage_databse_subscription("subscribe", yt_channel_id, yt_display_name, discord_channel_id, discord_guild_id)
 
         # Check if the local database insertion
         if database_status is False:
@@ -95,14 +97,23 @@ class youtube_management(object):
         else:
             return(True)
 
-    def manage_databse_subscription(self, mode, yt_channel_id, discord_channel_id, discord_guild_id = None):
+    def manage_databse_subscription(self, mode, yt_channel_id, yt_display_name, discord_channel_id, discord_guild_id = None):
         # This function will add(INSERT) or delete(DELETE) subscriptions to/from the database.
 
         try:
             if(mode == "subscribe"):
+                # Insert notification information
                 values = [yt_channel_id, discord_guild_id, discord_channel_id]
-                sql = "INSERT INTO `youtube_notifications` VALUES(NULL, %s, %s, %s)"
+                sql = "INSERT INTO `youtube_notifications` VALUES (NULL, %s, %s, %s)"
                 res = self.data_handler.insert(sql, values)
+
+                # If the channel ID is new/unique to the database, insert the id
+                #  and display name into `youtube_channels`
+                channel_res = self.data_handler.select("SELECT * FROM `youtube_channels` WHERE `yt_channel_id` =  %s", [yt_channel_id])
+
+                if(len(channel_res) == 0):
+                    self.data_handler.insert("INSERT INTO `youtube_channels` VALUES (NULL, %s, %s)", [yt_channel_id, yt_display_name])
+
 
             elif(mode == "unsubscribe"):
                 values = [yt_channel_id, discord_channel_id]
@@ -161,3 +172,64 @@ class youtube_management(object):
             'hub.verify':'sync',
             'hub.mode': mode
         })
+
+    def get_display_name(self, yt_channel_id):
+        # This function is used to retrieve the channel display name/title
+        # of the associated yt_channel_id
+        # NOTE: If a list is passed in for the argument 'yt_channel_id', this function
+        # will return the data in a dictionary format (the raw snippet data). If a string is passed, this
+        # function will only return the channel's display name (string).
+
+        if type(yt_channel_id) is list:
+            # convert list into string with values seperated by a comma
+            # /youtube/v3/channels endpoint supports using a list of channel IDs.
+            id = ",".join(yt_channel_id)
+        else:
+            id = yt_channel_id
+
+        try:
+            # Use the Google API to retreive the 'snippet' for the provided yt_channel_id
+            data = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=" + id + "&key=" + os.getenv('GCP_API_KEY').strip("\r"))
+            data = json.loads(data.content.decode('utf-8'))
+
+            if type(yt_channel_id) is list:
+                # Return the snippet data for all requested channel IDs
+                return(data)
+            else:
+                # Return the string value of the 'title' field
+                return(data['items'][0]['snippet']['title'])
+
+        except Exception as e:
+            # Failed to retreive the youtube channel name
+            return(None)
+
+    def get_channel_ids(self):
+        # Returns a unique list of Channel ID's stored in the database, returns a list of dicts
+        data = self.data_handler.select("SELECT DISTINCT `yt_channel_id` FROM `youtube_channels`", [])
+
+        # Flatten the dicts into a list
+        return(list(map(lambda x : x['yt_channel_id'], data)))
+
+    def update_display_names(self):
+        # Will update the `yt_display_name` column in `youtube_channels`.
+        # I don't think that the pubsubhubbub model supports sending webhooks
+        # when a channel updates their name.
+
+        yt_channel_ids = self.get_channel_ids()
+
+        snippet_data  = self.get_display_name(yt_channel_ids)
+
+        for channel in snippet_data['items']:
+            yt_channel_id = channel['id']
+            yt_display_name = channel['snippet']['title']
+            self.data_handler.update("UPDATE `youtube_channels` SET `yt_display_name` = %s WHERE `yt_channel_id` = %s", [yt_display_name, yt_channel_id])
+
+    def update_webhook_subs(self):
+        # Will update the pubsubhubbub webhook subscription for each channel
+        #  stored in the databse.
+
+        # Get a list of the YouTube Channel IDs stored in the database
+        yt_channel_ids = self.get_channel_ids()
+
+        for channel_id in yt_channel_ids:
+            self.manage_webhook_subscription('subscribe', channel_id)
