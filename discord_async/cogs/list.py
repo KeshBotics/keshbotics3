@@ -87,7 +87,7 @@ class notification_strings(object):
 
         youtube_str = ''
         for channel in youtube_channels:
-            youtube_str += str("https://youtube.com/channel/" + channel['youtube_channel_id'] + "\n")
+            youtube_str += str("[" + channel["youtube_display_name"] + "](https://youtube.com/channel/" + channel['youtube_channel_id'] + ")\n")
 
         youtube_str += "Remove a YouTube notification: ```k!youtube del <YouTube channel URL>```\n"
         youtube_str += "\n\n"
