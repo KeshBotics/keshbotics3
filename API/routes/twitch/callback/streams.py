@@ -20,6 +20,7 @@
 import falcon
 import json
 
+from classes.event_logging.event_logging import get_logger
 from classes.discord_post import discord_post
 from classes.data_handler import data_handler
 from classes.twitch.stream_metrics import stream_metrics
@@ -39,6 +40,7 @@ class twitch_callback_streams(object):
         try:
             data = json.loads(req.bounded_stream.read().decode())
 
+            # If data is empty (user offline), triggers KeyError exception
             if 'user_id' in data['data'][0]:
                 # Twitch user is online
                 twitch_username         = data['data'][0]['user_name']
@@ -63,8 +65,10 @@ class twitch_callback_streams(object):
                     data_handler().update('UPDATE `twitch_channels` SET `streaming` = %s WHERE `twitch_user_id` = %s', [1, twitch_user_id])
 
 
-        except Exception as e:
-            resp.body = str(e)
+        except KeyError as e:
             # twitch user is offline
             # stream_metrics().stream_stop(twitch_user_id)
             data_handler().update('UPDATE `twitch_channels` SET `streaming` = %s WHERE `twitch_user_id` = %s', [0, twitch_user_id])
+
+        except Exception as e:
+            get_logger().log.error(e, exc_info=True)

@@ -8,6 +8,7 @@ import os
 import random
 import string
 
+from classes.event_logging.event_logging import get_logger
 from classes.notifications import notifications
 
 class discord_post(object):
@@ -20,14 +21,17 @@ class discord_post(object):
         json_data = json.dumps(message)
 
         for channel_id in discord_channel_ids:
-            discord_message_url = "https://discordapp.com/api/channels/{}/messages".format(channel_id)
-            r = requests.post(discord_message_url, headers = self.headers, data = json_data)
+            try:
+                discord_message_url = "https://discordapp.com/api/channels/{}/messages".format(channel_id)
+                r = requests.post(discord_message_url, headers = self.headers, data = json_data)
 
-            if(r.status_code == 404 and r.json()['message'] == "Unknown Channel"):
-                # Discord channel no longer exist, delete notifications associated
-                # with the discord_channel_id
-                notifications().delete_by_discord_channel_id(channel_id)
+                if(r.status_code == 404 and r.json()['message'] == "Unknown Channel"):
+                    # Discord channel no longer exist, delete notifications associated
+                    # with the discord_channel_id
+                    notifications().delete_by_discord_channel_id(channel_id)
 
+            except Exception as e:
+                get_logger().error(e, exc_info=True)
 
     def prepare_twitch_message(self, twitch_username, twitch_thumbnail_url):
         twitch_channel_url = 'https://twitch.tv/' + twitch_username

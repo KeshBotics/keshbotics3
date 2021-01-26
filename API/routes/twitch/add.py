@@ -5,6 +5,7 @@
 import falcon
 import json
 
+from classes.event_logging.event_logging import get_logger
 from middleware.auth import auth
 from classes.twitch_management import twitch_management
 
@@ -39,5 +40,6 @@ class twitch_add(object):
             resp.body = json.dumps(message)
 
         except Exception as e:
-            print(str(e))
+            get_logger().error(e, exc_info=True)
             resp.body = "API ERROR"
+            resp.status = falcon.get_http_status(400)

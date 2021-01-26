@@ -6,6 +6,9 @@
 import falcon
 import os
 
+# DB/Discord Logging
+from classes.event_logging.event_logging import get_logger
+
 # middleware
 from middleware.request_logging import request_logging
 from middleware.print_x_real_ip import print_x_real_ip
@@ -101,9 +104,16 @@ class public_facing_api(object):
         return(self.app)
 
 
-if __name__ == '__main__':
-    # If the main.py is executed directly, the API will launch in "test" mode
-    public_facing_api().start()
-else:
-    # Guincorn will look for the variable "app"
-    app = public_facing_api().get_app()
+try:
+    if __name__ == '__main__':
+        # If the main.py is executed directly, the API will launch in "test" mode
+        get_logger().info('API starting in test mode', exc_info=True)
+        public_facing_api().start()
+
+    else:
+        # Guincorn will look for the variable "app"
+        get_logger().info('API starting via Guincorn', exc_info=True)
+        app = public_facing_api().get_app()
+
+except Exception as e:
+    get_logger().critical(e, exc_info=True)

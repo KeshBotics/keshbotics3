@@ -7,6 +7,7 @@ import requests
 import os
 import json
 
+from classes.event_logging.event_logging import get_logger
 from classes.data_handler import data_handler
 
 class discord_auth_token(object):
@@ -79,5 +80,5 @@ class discord_auth_token(object):
             return(db_insert)
 
         except Exception as e:
-            print(e)
+            get_logger().error(e, exc_info=True)
             return(False)

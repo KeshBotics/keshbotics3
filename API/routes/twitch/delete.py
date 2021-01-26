@@ -8,6 +8,7 @@
 import falcon
 import json
 
+from classes.event_logging.event_logging import get_logger
 from middleware.auth import auth
 from classes.twitch_management import twitch_management
 
@@ -39,3 +40,6 @@ class twitch_delete(object):
             resp.status = falcon.get_http_status(message['code'])
             resp.content_type = ['application/json']
             resp.body = json.dumps(message)
+
+        except Exception as e:
+            get_logger().error(e, exc_info=True)

@@ -7,6 +7,7 @@ import falcon
 import os
 import json
 
+from classes.event_logging.event_logging import get_logger
 from middleware.auth import auth
 from classes.youtube.youtube_management import youtube_management
 
@@ -27,6 +28,8 @@ class youtube_update(object):
             resp.body = json.dumps({"status":"success", "code":200})
 
         except Exception as e:
+            get_logger().error(e, exc_info=True)
+            
             resp.status = falcon.get_http_status(400)
             resp.content_type = ['application/json']
             resp.body = json.dumps({"status":"error", "code":400})

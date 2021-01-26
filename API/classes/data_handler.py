@@ -6,6 +6,7 @@
 
 import pymysql
 import os
+from classes.event_logging.event_logging import get_logger
 
 class data_handler(object):
     def __init__(self):
@@ -61,7 +62,7 @@ class data_handler(object):
             return(True)
 
         except Exception as e:
-            print('data_handler: 1')
+            get_logger().error(e, exc_info=True)
             return(False)
 
     def defined_delete(self, key, input):
@@ -78,7 +79,7 @@ class data_handler(object):
             return(True)
 
         except Exception as e:
-            print('data_handler: 3')
+            get_logger().error(e, exc_info=True)
             return(False)
 
     def defined_update(self, key, input):
@@ -95,20 +96,20 @@ class data_handler(object):
             return(True)
 
         except Exception as e:
-            print('data_handler: 6')
+            get_logger().error(e, exc_info=True)
             return(False)
 
     def select(self, sql, input, values_only=False):
-        conn = self.get_connection()
+        try:
+            conn = self.get_connection()
 
-        with conn.cursor() as cursor:
-            cursor.execute(sql, input)
+            with conn.cursor() as cursor:
+                cursor.execute(sql, input)
 
-        # if(values_only == True):
-        #     data = cursor.fetchall()
-        #     return(list(map(lambda x : x['discord_channel_id'], data)))
+            return(cursor.fetchall())
 
-        return(cursor.fetchall())
+        except Exception as e:
+            get_logger().error(e, exc_info=True)
 
     def insert(self, sql, input):
 
@@ -122,9 +123,9 @@ class data_handler(object):
             conn.close()
 
             return(True)
+
         except Exception as e:
-            print('data_handler: 2')
-            print(e)
+            get_logger().error(e, exc_info=True)
             return(False)
 
     def update(self, sql, input):
@@ -140,8 +141,7 @@ class data_handler(object):
 
             return(True)
         except Exception as e:
-            print('data_handler: 4')
-            print(e)
+            get_logger().error(e, exc_info=True)
             return(False)
 
     def delete(self, sql, input):
@@ -157,6 +157,5 @@ class data_handler(object):
 
             return(True)
         except Exception as e:
-            print('data_handler: 4')
-            print(e)
+            get_logger().error(e, exc_info=True)
             return(False)
