@@ -157,8 +157,8 @@ class event_log(logging.Handler):
             return(os.getenv("DISCORD_LOG_CHANNEL_INFO"))
         elif(log_level >= 10):
             return(os.getenv("DISCORD_LOG_CHANNEL_DEBUG"))
-        else:
-            return(os.getenv("DISCORD_LOG_CHANNEL_NOTSET"))
+
+        return(os.getenv("DISCORD_LOG_CHANNEL_NOTSET"))
 
 class get_logger(object):
     def __new__(cls, name = None):
