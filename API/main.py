@@ -41,6 +41,9 @@ from routes.notifications.notifications import get_notificaitons
 from routes.web.discord.auth_callback import discord_auth_callback
 from routes.web.discord.auth_validate import discord_auth_validate
 
+# Logging Interface
+from routes.log import route_log
+
 class public_facing_api(object):
     def __init__(self):
         # The initialize function will define the API middleware and routes, and
@@ -62,6 +65,7 @@ class public_facing_api(object):
             {'route':'/youtube/manage/add',     'class': youtube_add()},
             {'route':'/youtube/manage/delete',  'class': youtube_delete()},
             {'route':'/youtube/update',         'class': youtube_update()},
+            {'route':'/log',         'class': route_log()},
             {'route':'/test',   'class': test()},
             {'route':'/notifications',   'class': get_notificaitons()},
             {'route':'/twitter/callback', 'class': twitter_callback()},
