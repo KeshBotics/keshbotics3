@@ -35,8 +35,7 @@ extensions = [  'cogs.owner',
                 'cogs.error_handling',
                 'cogs.help',
                 'cogs.list',
-                'cogs.events',
-                'cogs.ping'
+                'cogs.events'
                 ]
 
 # Load the cogs

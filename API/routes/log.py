@@ -35,7 +35,8 @@ class route_log(object):
                 # Get int value of limit, if limit is greater than 100: set to 100
                 # Will raise exception if cannot convert to int
                 limit = int(req.get_header('limit'))
-                if limit > 100: limit = 100
+                if limit > 100:
+                    limit = 100
 
             # Retrieve the requested entries from the database
             events = data_handler().select("SELECT * FROM `logging` WHERE `level` >= %s ORDER BY `id` DESC LIMIT %s", [level, limit])
@@ -82,7 +83,8 @@ class route_log(object):
                     )
 
             # If inserting the log into the database resulted in an error db_status = (false)
-            if not db_status: raise
+            if not db_status:
+                raise
 
             # Send message to Discord, note: level must meet DISCORD_MIN_TO_LOG
             message = str(data['log_level']) + " | " + str(data['log_pathname']) + " | " + str(data['log_class_name']) + " | " + str(data['log_function_name']) + " | " + str(data['log_exc_info']) + " | " + str(data['log_message'])

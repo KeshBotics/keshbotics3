@@ -51,11 +51,8 @@ class youtube_management(object):
 
         # Check if the YouTube API subscription was successful
         if subscribe_status is False:
-            # Error with YouTube API
-            # return("Error: YouTube API error!")
-            # This should not be returned to the user, create an internal
-            # mechanism for handling this
-            pass
+            # Error with YouTube API (pubsubhubbub)
+            get_logger().error("Error YouTube webhook subscription failed", exc_info=True)
 
         return({"status":"success", "code":200, "message":"Notification successfully added!"})
 

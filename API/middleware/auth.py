@@ -14,7 +14,7 @@ class auth(object):
 
     def __call__(self, req, resp, resource, params):
         # Checks if the auth header matches the valid api_auth_code
-        auth_code = req.get_header('auth')
+        auth_code = str(req.get_header('auth'))
 
         if(auth_code != os.getenv('API_AUTH_CODE').strip("\r")):
             raise falcon.HTTPUnauthorized('Authentication Required', 'Provide authentication code in auth header.')
