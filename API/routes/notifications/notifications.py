@@ -5,6 +5,7 @@
 import falcon
 import json
 
+from classes.event_logging.event_logging import get_logger
 from middleware.auth import auth
 from classes.notifications import notifications
 
@@ -46,6 +47,8 @@ class get_notificaitons(object):
             resp.body = json.dumps(message)
 
         except Exception as e:
+            get_logger().error(e, exc_info=True)
+
             message = {"status":"error", "code":400, "message":'API ERROR'}
             resp.status = falcon.get_http_status(message['code'])
             resp.content_type = ['application/json']
@@ -71,6 +74,14 @@ class get_notificaitons(object):
 
         except falcon.HTTPBadRequest as e:
             message = {"status":"error", "code":400, "message":e.description}
+            resp.status = falcon.get_http_status(message['code'])
+            resp.content_type = ['application/json']
+            resp.body = json.dumps(message)
+
+        except Exception as e:
+            get_logger().error(e, exc_info=True)
+
+            message = {"status":"error", "code":400, "message":'API ERROR'}
             resp.status = falcon.get_http_status(message['code'])
             resp.content_type = ['application/json']
             resp.body = json.dumps(message)

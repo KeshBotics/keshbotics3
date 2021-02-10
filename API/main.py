@@ -6,6 +6,9 @@
 import falcon
 import os
 
+# DB/Discord Logging
+from classes.event_logging.event_logging import get_logger
+
 # middleware
 from middleware.request_logging import request_logging
 from middleware.print_x_real_ip import print_x_real_ip
@@ -38,6 +41,9 @@ from routes.notifications.notifications import get_notificaitons
 from routes.web.discord.auth_callback import discord_auth_callback
 from routes.web.discord.auth_validate import discord_auth_validate
 
+# Logging Interface
+from routes.log import route_log
+
 class public_facing_api(object):
     def __init__(self):
         # The initialize function will define the API middleware and routes, and
@@ -59,6 +65,7 @@ class public_facing_api(object):
             {'route':'/youtube/manage/add',     'class': youtube_add()},
             {'route':'/youtube/manage/delete',  'class': youtube_delete()},
             {'route':'/youtube/update',         'class': youtube_update()},
+            {'route':'/log',         'class': route_log()},
             {'route':'/test',   'class': test()},
             {'route':'/notifications',   'class': get_notificaitons()},
             {'route':'/twitter/callback', 'class': twitter_callback()},
@@ -101,9 +108,16 @@ class public_facing_api(object):
         return(self.app)
 
 
-if __name__ == '__main__':
-    # If the main.py is executed directly, the API will launch in "test" mode
-    public_facing_api().start()
-else:
-    # Guincorn will look for the variable "app"
-    app = public_facing_api().get_app()
+try:
+    if __name__ == '__main__':
+        # If the main.py is executed directly, the API will launch in "test" mode
+        get_logger().info('API starting in test mode', exc_info=True)
+        public_facing_api().start()
+
+    else:
+        # Guincorn will look for the variable "app"
+        get_logger().info('API starting via Guincorn', exc_info=True)
+        app = public_facing_api().get_app()
+
+except Exception as e:
+    get_logger().critical(e, exc_info=True)

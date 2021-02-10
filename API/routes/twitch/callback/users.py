@@ -6,6 +6,7 @@
 import falcon
 import json
 
+from classes.event_logging.event_logging import get_logger
 from classes.twitch_management import twitch_management
 
 class twitch_callback_users(object):
@@ -29,4 +30,4 @@ class twitch_callback_users(object):
 
 
         except Exception as e:
-            resp.body = str(e)
+            get_logger().error(e, exc_info=True)

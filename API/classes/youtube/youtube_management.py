@@ -11,6 +11,7 @@ import requests
 import os
 import json
 
+from classes.event_logging.event_logging import get_logger
 from classes.data_handler import data_handler
 from classes.youtube.youtube_channel_id import youtube_channel_id
 
@@ -42,6 +43,7 @@ class youtube_management(object):
         # Check if the local database insertion
         if database_status is False:
             # Error with the database
+            get_logger().error("Error inserting subscription", exc_info=True)
             return({"status":"error", "code":503, "message":"Error internal database failure!"})
 
         # Subscribe to the webhook for the given channel
@@ -49,11 +51,8 @@ class youtube_management(object):
 
         # Check if the YouTube API subscription was successful
         if subscribe_status is False:
-            # Error with YouTube API
-            # return("Error: YouTube API error!")
-            # This should not be returned to the user, create an internal
-            # mechanism for handling this
-            pass
+            # Error with YouTube API (pubsubhubbub)
+            get_logger().error("Error YouTube webhook subscription failed", exc_info=True)
 
         return({"status":"success", "code":200, "message":"Notification successfully added!"})
 
@@ -75,7 +74,7 @@ class youtube_management(object):
         # and unsubscribing could create unintended results
 
         if database_status == False:
-            # TODO: Implement methodolgy of notifiying developers about this issue.
+            get_logger().error("Error removing notification from the database!", exc_info=True)
             return({"status":"error", "code":503, "message":"Error removing notification from the database!"})
         else:
             return({"status":"success", "code":200, "message":"Notification successfully removed!"})
@@ -128,7 +127,7 @@ class youtube_management(object):
             return(True)
 
         except Exception as e:
-            print("manage_databse_subscription: " + str(e))
+            get_logger().error(e, exc_info=True)
             return(False)
 
 
@@ -160,7 +159,7 @@ class youtube_management(object):
             # NOTE: See above
             return(True)
         except Exception as e:
-            print("manage_webhook_subscription: " + str(e))
+            get_logger().error(e, exc_info=True)
             return(False)
 
     def get_form_data(self, mode, yt_channel_id,):
