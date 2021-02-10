@@ -69,8 +69,8 @@ class youtube_management(object):
             return({"status":"error", "code":400, "message":"Error unable to parse the URL!"})
 
         # Remove the yt_channel and discord_channel_id combination from the database
-        database_status = self.manage_databse_subscription("unsubscribe", yt_channel_id, discord_channel_id, None)
-
+        database_status = self.manage_databse_subscription("unsubscribe", yt_channel_id, None, discord_channel_id, None)
+        
         # Ignore unsubscribing from the YouTube webhook, the lease will automatically expire,
         # and unsubscribing could create unintended results
 
