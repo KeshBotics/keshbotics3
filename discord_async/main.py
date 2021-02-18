@@ -4,11 +4,13 @@
 
 import discord
 from discord.ext import commands
+intents = discord.Intents(messages=True, guilds=True, members=True)
+
 
 import os
 
 # Create a bot object using the prefix definding the env file
-bot = commands.Bot(command_prefix=os.getenv('COMMAND_PREFIX').strip("\r"))
+bot = commands.Bot(command_prefix=os.getenv('COMMAND_PREFIX').strip("\r"), intents=intents)
 # Remove the default help command
 bot.remove_command('help')
 
