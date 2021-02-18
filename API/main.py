@@ -116,7 +116,7 @@ try:
 
     else:
         # Guincorn will look for the variable "app"
-        get_logger().info('API starting via Guincorn', exc_info=True)
+        get_logger().info('API starting via Guincorn: ' + str(os.getpid()), exc_info=True)
         app = public_facing_api().get_app()
 
 except Exception as e:

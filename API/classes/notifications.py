@@ -2,6 +2,7 @@
 # Date: 2021-01-12
 # Desc: Used to retreive a list of notifications by discord_channel_id
 
+from classes.event_logging.event_logging import get_logger
 from classes.data_handler import data_handler
 
 class notifications(object):
