@@ -65,10 +65,10 @@ class twitch_callback_streams(object):
                     data_handler().update('UPDATE `twitch_channels` SET `streaming` = %s WHERE `twitch_user_id` = %s', [1, twitch_user_id])
 
 
-        except KeyError as e:
+        except (KeyError, IndexError, json.decoder.JSONDecodeError) as e:
             # twitch user is offline
             # stream_metrics().stream_stop(twitch_user_id)
             data_handler().update('UPDATE `twitch_channels` SET `streaming` = %s WHERE `twitch_user_id` = %s', [0, twitch_user_id])
 
         except Exception as e:
-            get_logger().log.error(e, exc_info=True)
+            get_logger().error(e, exc_info=True)

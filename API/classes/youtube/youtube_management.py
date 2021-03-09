@@ -24,37 +24,42 @@ class youtube_management(object):
         # Use the youtube_channel_id class to determine the YouTube channel ID
         # for the given URL.
 
-        # Convert the yt_channel_url into a YouTube channel ID.
-        yt_channel_id = youtube_channel_id().get_yt_channel_id(yt_channel_url)
+        try:
+            # Convert the yt_channel_url into a YouTube channel ID.
+            yt_channel_id = youtube_channel_id().get_yt_channel_id(yt_channel_url)
 
-        # If the youtube_channel_id is unable to parse the URL, return the error.
-        if yt_channel_id is None:
-            return({"status":"error", "code":400, "message":"Error unable to parse the URL!"})
+            # If the youtube_channel_id is unable to parse the URL, return the error.
+            if yt_channel_id is None:
+                return({"status":"error", "code":400, "message":"Error unable to parse the URL!"})
 
-        # Check if the yt_channel_id and discord_channel_id combination are unqiue.
-        if(self.check_if_exist(yt_channel_id, discord_channel_id)):
-            # The subscription to the YouTube channel in the Discord channel already exist.
-            return({"status":"error", "code":400, "message":"Notification already exist!"})
+            # Check if the yt_channel_id and discord_channel_id combination are unqiue.
+            if(self.check_if_exist(yt_channel_id, discord_channel_id)):
+                # The subscription to the YouTube channel in the Discord channel already exist.
+                return({"status":"error", "code":400, "message":"Notification already exist!"})
 
-        # Add notifcation to local databse
-        yt_display_name = self.get_display_name(yt_channel_id)
-        database_status = self.manage_databse_subscription("subscribe", yt_channel_id, yt_display_name, discord_channel_id, discord_guild_id)
+            # Add notifcation to local databse
+            yt_display_name = self.get_display_name(yt_channel_id)
+            database_status = self.manage_databse_subscription("subscribe", yt_channel_id, yt_display_name, discord_channel_id, discord_guild_id)
 
-        # Check if the local database insertion
-        if database_status is False:
-            # Error with the database
-            get_logger().error("Error inserting subscription", exc_info=True)
-            return({"status":"error", "code":503, "message":"Error internal database failure!"})
+            # Check if the local database insertion
+            if database_status is False:
+                # Error with the database
+                get_logger().error("Error inserting subscription", exc_info=True)
+                return({"status":"error", "code":503, "message":"Error internal database failure!"})
 
-        # Subscribe to the webhook for the given channel
-        subscribe_status = self.manage_webhook_subscription("subscribe", yt_channel_id)
+            # Subscribe to the webhook for the given channel
+            subscribe_status = self.manage_webhook_subscription("subscribe", yt_channel_id)
 
-        # Check if the YouTube API subscription was successful
-        if subscribe_status is False:
-            # Error with YouTube API (pubsubhubbub)
-            get_logger().error("Error YouTube webhook subscription failed", exc_info=True)
+            # Check if the YouTube API subscription was successful
+            if subscribe_status is False:
+                # Error with YouTube API (pubsubhubbub)
+                get_logger().error("Error YouTube webhook subscription failed", exc_info=True)
 
-        return({"status":"success", "code":200, "message":"Notification successfully added!"})
+            return({"status":"success", "code":200, "message":"Notification successfully added!"})
+
+        except Exception as e:
+            get_logger().error(e, exc_info=True)
+            return({"status":"error", "code":503, "message":"Error internal system failure!"})
 
     def unsubscribe(self, yt_channel_url, discord_channel_id):
         # Use the youtube_channel_id class to determine the YouTube channel ID
@@ -69,7 +74,7 @@ class youtube_management(object):
 
         # Remove the yt_channel and discord_channel_id combination from the database
         database_status = self.manage_databse_subscription("unsubscribe", yt_channel_id, None, discord_channel_id, None)
-        
+
         # Ignore unsubscribing from the YouTube webhook, the lease will automatically expire,
         # and unsubscribing could create unintended results
 

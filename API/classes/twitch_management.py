@@ -49,9 +49,13 @@ class twitch_management(object):
             return({"status":"error", "code":503, "message":"Error subscribing to twitch service!"})
 
         # Insert the twitch user and the notification parameters to the database
-        # Add channel to `twitch_channels` NOTE: This query will result in  pymysql.err.IntegrityError if the twitch
-        # channel ID has been previously added.
-        self.db.insert('INSERT INTO `twitch_channels` VALUES (%s, %s, %s)', [self.twitch_user_id, self.twitch_username, 0])
+        # Add channel to `twitch_channels`.
+        # Check if the twitch_user_id exist in the database, add if not
+        channel_exist = self.db.select('SELECT `twitch_user_id` FROM `twitch_channels` WHERE `twitch_user_id` = %s', [self.twitch_user_id])
+        if(len(channel_exist) == 0):
+            # The Twitch user ID does not exist in the database
+            self.db.insert('INSERT INTO `twitch_channels` VALUES (%s, %s, %s)', [self.twitch_user_id, self.twitch_username, 0])
+
         # Add notification parameters to `twitch_notifications`
         db_status = self.db.insert('INSERT INTO `twitch_notifications` VALUES (%s, %s, %s, %s)', [None, self.twitch_user_id, self.discord_guild_id, self.discord_channel_id])
 

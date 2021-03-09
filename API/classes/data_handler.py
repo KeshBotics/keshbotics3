@@ -110,6 +110,7 @@ class data_handler(object):
 
         except Exception as e:
             get_logger().error(e, exc_info=True)
+            return(None)
 
     def insert(self, sql, input):
 

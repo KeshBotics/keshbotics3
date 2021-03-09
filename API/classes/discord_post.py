@@ -10,6 +10,7 @@ import string
 
 from classes.event_logging.event_logging import get_logger
 from classes.notifications import notifications
+from classes.discord.discord_management import discord_management
 
 class discord_post(object):
     def __init__(self):
@@ -18,6 +19,10 @@ class discord_post(object):
                         "Content-Type":"application/json", }
 
     def post_message(self, message, discord_channel_ids):
+        # Used to send a message to an array of discord channel IDs
+        # This is called for both Twitch and YouTube notifications
+
+        # Convert the message dict into a JSON object
         json_data = json.dumps(message)
 
         for channel_id in discord_channel_ids:
@@ -29,6 +34,10 @@ class discord_post(object):
                     # Discord channel no longer exist, delete notifications associated
                     # with the discord_channel_id
                     notifications().delete_by_discord_channel_id(channel_id)
+
+                if(r.status_code == 403 and r.json()['message'] == "Missing Permissions"):
+                    # The bot is missing permissions for the discord channel ID
+                    discord_management().alert_guild_owner_permissions(channel_id)
 
             except Exception as e:
                 get_logger().error(e, exc_info=True)
