@@ -29,18 +29,63 @@ class error_handling(commands.Cog):
         class_name = "discord_async"
         function_name = str(ctx.command)
         exc_info = None
-        message = str(error)
+        message = str(error) + " channel:" + str(ctx.channel.id)
 
         # Log the event to the database via the API
         status = log_event(level, pathname, class_name, function_name, exc_info, message)
 
         if not status:
+            # Adding log to database returned false (error)
             # Send message to defined channel
-            channel = self.bot.get_channel(int(os.getenv("DISCORD_LOG_CHANNEL_CRITICAL")))
-            await channel.send(str("Error logging discord_async error to API! | " + str(ctx.command) + " | " + str(error)))
+            critical_log_channel = self.bot.get_channel(int(os.getenv("DISCORD_LOG_CHANNEL_CRITICAL")))
+            await critical_log_channel.send(str("Error logging discord_async error to API! | " + str(ctx.command) + " | " + str(error)))
 
-        # Notify the channel the issued the command that an error has happened.
-        await ctx.send('Error handling command! The development team has been notified.')
+        # Determine the error that occured and respond with an appropriate message.
+        # Expected exceptions:
+        #   - discord.errors.Forbidden: The bot lacks the required permissions
+        #   - discord.ext.commands.MissingPermissions: The calling user lacks the required permissions to interact with the bot
+        try:
+            # Get the original error attributes
+            error_attr = getattr(error, 'original', error)
+
+            # Check if the error type matches discord.errors.Forbidden, this indicates that the bot lacks permissions.
+            if isinstance(error_attr, discord.errors.Forbidden):
+                # If this sends successfully, the bot lacks the permission to send embedded messages.
+                # If this fails to send, the bot lacks permissions to send both embedded messages and plain-text messages.
+                # Failure to send will trigger the discord.errors.Forbidden exception below.
+                await ctx.send(content="Error! Unable to embed links in this channel! Please adjust the permissions so that I can embed links.")
+
+            # Check if the error type matches discord discord.ext.commands.MissingPermissions
+            elif isinstance(error_attr, discord.ext.commands.MissingPermissions):
+                # The calling user is missing the required guild permisions to interact with the bot.
+                # Interactions with this bot typically requires that the user has the "manage_messages" permission.
+                await ctx.send(error_attr)
+
+            else:
+                # An unexpected error occured, send generic message indicating an error.
+                await ctx.send('Error handling command! The development team has been notified.')
+
+        except discord.errors.Forbidden:
+            # Unable to send message in current channel, notify the calling user and guild owner via direct message.
+            #  Calling user referes to the user who executed the command.
+            error_msg = "I've encountered an error! \n Guild: ```" + str(ctx.guild.name) + "``` Channel: ```" + str(ctx.channel.name) + "```Please ensure that I'm able to read messages, send messages, and embed links in this channel."
+
+            # Send a direct message to the calling user.
+            calling_user = await self.bot.fetch_user(int(ctx.message.author.id))
+            await calling_user.send(error_msg)
+
+            # If the calling user is not the guild owner, send a direct message to the guild owner also.
+            if(ctx.message.author.id != ctx.guild.owner.id):
+                guild_owner = await self.bot.fetch_user(int(ctx.guild.owner.id))
+                await guild_owner.send(error_msg)
+
+        except Exception as e:
+            # Unexpected Exception, attempt to log.
+            # Create string with exception information
+            message = str(e) + " " + str(type(e).__name__)
+
+            # Attempt to log exception details to database via the API
+            log_event(50, "error_handling.py", "error_handling", "on_command_error", None, message)
 
 def setup(bot):
     bot.add_cog(error_handling(bot))
