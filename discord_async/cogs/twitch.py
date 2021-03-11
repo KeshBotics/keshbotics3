@@ -42,8 +42,14 @@ class twitch_cog(commands.Cog):
 
         data = json.loads(resp.content)
 
-        if(data['message']):
+        if(resp.status_code == 403):
+            # Notification limit has been reached
+            message = data['message'] + " Use command `" + os.getenv('COMMAND_PREFIX') + "list` to manage existing notifications. Additionally, command `" +  os.getenv('COMMAND_PREFIX') + "request` can be used to request a notification limit increase."
+            await ctx.send(message)
+
+        elif(data['message']):
             await ctx.send(data['message'])
+
         else:
             await ctx.send('Back-end server error!')
 
