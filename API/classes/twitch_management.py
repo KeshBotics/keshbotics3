@@ -12,6 +12,7 @@ import requests
 import os
 
 from classes.data_handler import data_handler
+from classes.notification_limit import notification_limit
 
 class twitch_management(object):
     def __init__(self, twitch_username, discord_guild_id, discord_channel_id):
@@ -31,6 +32,11 @@ class twitch_management(object):
         # 3. Subscribe to the twitch notifcation webhook
         # 4. Insert the twitch channel to `twitch_channels` table
         # 5. Insert the notifcation parameters to `twitch_notifications` table
+
+        # Check if the discord_guild_id has reached the notification limit
+        if(notification_limit().twitch_limit_reached(self.discord_guild_id)):
+            # The limit has been reached
+            return({"status":"error", "code":403, "message":"Notification limit has been reached!"})
 
         # Check if twitch_user_id is present
         if(self.twitch_user_id is None):

@@ -36,6 +36,7 @@ from routes.twitter.callback import twitter_callback
 
 # Notifications API routes
 from routes.notifications.notifications import get_notificaitons
+from routes.notifications.limits        import limits
 
 # Routes for web interface
 from routes.web.discord.auth_callback import discord_auth_callback
@@ -67,7 +68,8 @@ class public_facing_api(object):
             {'route':'/youtube/update',         'class': youtube_update()},
             {'route':'/log',         'class': route_log()},
             {'route':'/test',   'class': test()},
-            {'route':'/notifications',   'class': get_notificaitons()},
+            {'route':'/notifications',          'class': get_notificaitons()},
+            {'route':'/notifications/limits',   'class': limits()},
             {'route':'/twitter/callback', 'class': twitter_callback()},
             {'route':'/v1/web/discord/auth/callback', 'class':discord_auth_callback()},
             {'route':'/v1/web/discord/auth/validate', 'class':discord_auth_validate()},

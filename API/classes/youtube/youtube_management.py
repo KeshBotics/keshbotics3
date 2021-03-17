@@ -14,6 +14,7 @@ import json
 from classes.event_logging.event_logging import get_logger
 from classes.data_handler import data_handler
 from classes.youtube.youtube_channel_id import youtube_channel_id
+from classes.notification_limit import notification_limit
 
 class youtube_management(object):
     def __init__(self):
@@ -25,6 +26,11 @@ class youtube_management(object):
         # for the given URL.
 
         try:
+            # Check if the discord_guild_id has reached the notification limit
+            if(notification_limit().youtube_limit_reached(discord_guild_id)):
+                # The limit has been reached
+                return({"status":"error", "code":403, "message":"Notification limit has been reached!"})
+
             # Convert the yt_channel_url into a YouTube channel ID.
             yt_channel_id = youtube_channel_id().get_yt_channel_id(yt_channel_url)
 
