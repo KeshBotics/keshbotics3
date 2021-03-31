@@ -32,6 +32,33 @@ class youtube_subscribe(object):
 
         return(youtube_channel_ids)
 
+    def refresh_youtube_data(self, yt_channel_id):
+
+        # Use the Google API to retreive the 'snippet' for the provided yt_channel_id
+        data = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=" + channel_id + "&key=" + os.getenv('GCP_API_KEY').strip("\r"))
+        data = json.loads(data.content.decode('utf-8'))
+
+        if(int(data['pageInfo']['totalResults'] == 0):
+            # No results for the given YouTube Channel ID
+            # Delete the channel data from the Database
+            sql = "DELETE FROM `youtube_channels` WHERE `yt_channel_id` = %s"
+            values = [yt_channel_id]
+
+        else:
+            # Ensure that the tracked data remains updated
+            sql = "UPDATE `youtube_channels` SET `yt_display_name` = %s WHERE `yt_channel_id` = %s"
+            yt_display_name = data['items'][0]['snippet']['title']
+            values = [yt_display_name, yt_channel_id]
+
+        # Get database conections object
+        con = self.get_connection()
+
+        # Execute changes
+        with con.cursor() as cursor:
+            cursor.execute(sql, values)
+
+        conn.commit()
+        conn.close()
 
     def manage_webhook_subscription(self, mode, yt_channel_id):
         # This function subscribe/unsubscribe to/from notifications for the youtube
