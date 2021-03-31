@@ -33,12 +33,14 @@ class youtube_subscribe(object):
         return(youtube_channel_ids)
 
     def refresh_youtube_data(self, yt_channel_id):
+        # The only values tracked by this application are: Youtube Channel ID and
+        #  the YouTube Display Name (stored in [items][0][snippet][title]).
 
         # Use the Google API to retreive the 'snippet' for the provided yt_channel_id
         data = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=" + channel_id + "&key=" + os.getenv('GCP_API_KEY').strip("\r"))
         data = json.loads(data.content.decode('utf-8'))
 
-        if(int(data['pageInfo']['totalResults'] == 0):
+        if(int(data['pageInfo']['totalResults'] == 0)):
             # No results for the given YouTube Channel ID
             # Delete the channel data from the Database
             sql = "DELETE FROM `youtube_channels` WHERE `yt_channel_id` = %s"
