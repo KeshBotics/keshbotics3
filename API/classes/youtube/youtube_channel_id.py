@@ -31,10 +31,6 @@ class youtube_channel_id(object):
         # This function uses regex to determine the channel type and identifier value
         channel = self.re_channel_from_url(url)
 
-        if channel is None:
-            # Regex function was unable to find a channel type and identifier value
-            return(None)
-
         # Handle the various channel types accordingly
         if(channel['type'] == "channel"):
             # type is "/channel/", the value is a channel ID
@@ -52,7 +48,7 @@ class youtube_channel_id(object):
             # type is "/", the value is either custom name or username
             return(self.shortened_url(channel['value']))
 
-        # Unexpected channel type
+        # Unexpected channel type/ Regex function was unable to find a channel type and identifier value
         return(None)
 
     def re_channel_from_url(self, url):
