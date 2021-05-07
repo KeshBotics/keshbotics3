@@ -5,7 +5,11 @@ import requests
 import json
 import os
 
-usage = os.getenv('COMMAND_PREFIX') + 'twitch <action (add/del/delete)> <twitch_username>'
+usage = ("> Syntax: \n"
+        "> ```" + os.getenv("COMMAND_PREFIX") + "twitch <action (add/del/delete)> <twitch_username>``` \n"
+        "> Example: \n"
+        "> ```" + os.getenv("COMMAND_PREFIX") + "twitch add summit1g```"
+        )
 
 class twitch_cog(commands.Cog):
 

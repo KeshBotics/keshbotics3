@@ -10,7 +10,7 @@ import requests
 import json
 import os
 
-request_usage = os.getenv('COMMAND_PREFIX') + 'request'
+request_usage = ("> Usage: \n> ```" + os.getenv("COMMAND_PREFIX") + "request ```")
 
 class notification_limits(commands.Cog):
     def __init__(self, bot):

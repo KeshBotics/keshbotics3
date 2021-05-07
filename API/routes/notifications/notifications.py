@@ -8,6 +8,8 @@ import json
 from classes.event_logging.event_logging import get_logger
 from middleware.auth import auth
 from classes.notifications import notifications
+from classes.discord.discord_management import discord_management
+from classes.notification_limit import notification_limit
 
 @falcon.before(auth())
 class get_notificaitons(object):
@@ -22,16 +24,31 @@ class get_notificaitons(object):
             if discord_channel_id is None:
                 raise falcon.HTTPBadRequest('Missing Requried Headers', 'Required header(s): discord-channel-id')
 
+            # Get the parent guild of the discord_channel_id
+            discord_guild_id = discord_management().find_parent_guild(discord_channel_id)
+
             # Create object for notifications class, get notification data for twitch and youtube
             # If no notifications are found, type None will be returned
             notifications_obj = notifications()
-            twitch_notifications  = notifications_obj.get_twitch_notifications(discord_channel_id)
-            youtube_notifications = notifications_obj.get_youtube_notifications(discord_channel_id)
+
+            # Create object for notification limit class, get notification limit and number of
+            # notifications registered for each platform
+            notification_limit_obj = notification_limit()
 
             # Create dict with notification data
             data = { discord_channel_id: {
-                        'twitch':twitch_notifications,
-                        'youtube':youtube_notifications
+                        'twitch':notifications_obj.get_twitch_notifications(discord_channel_id),
+                        'youtube':notifications_obj.get_youtube_notifications(discord_channel_id),
+                        'limits': {
+                            'twitch': {
+                                'limit': notification_limit_obj.get_twitch_limit(discord_guild_id),
+                                'used': notification_limit_obj.get_twitch_notification_count(discord_guild_id)
+                                },
+                            'youtube': {
+                                'limit': notification_limit_obj.get_youtube_limit(discord_guild_id),
+                                'used': notification_limit_obj.get_youtube_notification_count(discord_guild_id)
+                                }
+                            }
                         }
                    }
 

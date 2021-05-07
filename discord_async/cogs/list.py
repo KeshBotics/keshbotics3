@@ -10,7 +10,11 @@ import requests
 import json
 import os
 
-usage = os.getenv('COMMAND_PREFIX') + 'list <platform (Twitch/YouTube)>'
+usage = ("> Syntax:\n"
+        "> ```{0}list <platform (Twitch/YouTube) optional>``` \n"
+        "> Example:\n"
+        """> ```{0}list ```"""
+        ).format(os.getenv("COMMAND_PREFIX"), os.getenv("COMMAND_PREFIX"), os.getenv("COMMAND_PREFIX"))
 
 class notification_list_cog(commands.Cog):
     def __init__(self, bot):
@@ -51,11 +55,13 @@ class notification_list_cog(commands.Cog):
 
         # Add field for Twitch Notifications
         if(platform is None or platform.lower() == 'twitch' ):
-            embed.add_field(name="Twitch", value=notification_strings().get_twitch_str(data[str(ctx.channel.id)]['twitch']), inline=False)
+            name = "Twitch (" + str(data[str(ctx.channel.id)]['limits']['twitch']['used'])  + "/" + str(data[str(ctx.channel.id)]['limits']['twitch']['limit']) + ")"
+            embed.add_field(name=name, value=notification_strings().get_twitch_str(data[str(ctx.channel.id)]['twitch']), inline=False)
 
         # Add field for YouTube Notifications
         if(platform is None or platform.lower() == 'youtube' ):
-            embed.add_field(name="YouTube", value=notification_strings().get_youtube_str(data[str(ctx.channel.id)]['youtube']), inline=False)
+            name = "Youtube (" + str(data[str(ctx.channel.id)]['limits']['youtube']['used'])  + "/" + str(data[str(ctx.channel.id)]['limits']['youtube']['limit']) + ")"
+            embed.add_field(name=name, value=notification_strings().get_youtube_str(data[str(ctx.channel.id)]['youtube']), inline=False)
 
         await ctx.send(content="", embed=embed)
 

@@ -23,8 +23,8 @@ class limits(object):
 
             # Retrieve the limits for both Twitch and YouTube
             twitch_notification_limit = notification_limit().get_twitch_limit(discord_guild_id)
-            youtube_notifications_limit = notification_limit().get_youtube_limit(discord_guild_id)
-            body = {"twitch": twitch_notification_limit, "youtube":youtube_notifications_limit}
+            youtube_notification_limit = notification_limit().get_youtube_limit(discord_guild_id)
+            body = {"twitch": twitch_notification_limit, "youtube":youtube_notification_limit}
 
             resp.status = falcon.get_http_status(200)
             resp.content_type = ['application/json']
