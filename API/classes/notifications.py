@@ -19,7 +19,7 @@ class notifications(object):
 
         if(len(twitch_user_ids) == 0):
             # No twitch notifications found for the discord_channel_id
-            return(None)
+            return(list())
 
         # Flatten the twitch_user_ids dict into a list
         twitch_user_ids = list(map(lambda x : x['twitch_user_id'], twitch_user_ids))
@@ -53,8 +53,10 @@ class notifications(object):
         youtube_channel_ids = self.db.select(sql, [discord_channel_id])
 
         if(len(youtube_channel_ids) == 0):
-            return(None)
+            # No results found, return empty list
+            return(list())
 
+        # Return the results
         return(youtube_channel_ids)
 
     def delete_by_discord_channel_id(self, discord_channel_id):

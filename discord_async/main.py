@@ -33,7 +33,6 @@ async def on_message(message):
 extensions = [  'cogs.owner',
                 'cogs.twitch',
                 'cogs.youtube',
-                'cogs.purge',
                 'cogs.error_handling',
                 'cogs.help',
                 'cogs.list',

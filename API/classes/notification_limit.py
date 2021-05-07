@@ -111,12 +111,10 @@ class notification_limit(object):
         #  the given discord_guild_id.
         # Retrurns False if the limit is not reached.
 
-        # Create an SQL query to count the number of Twitch notifications
-        sql = "SELECT count(`id`) as 'count' FROM `twitch_notifications` WHERE `discord_guild_id` = %s"
-        res = self.db.select(sql, [discord_guild_id])
+        notification_count = self.get_twitch_notification_count(discord_guild_id)
 
         # Check if the 'count' is equal to or greater than the Twitch notification limit
-        if(res[0]['count'] >= self.get_twitch_limit(discord_guild_id)):
+        if(notification_count >= self.get_twitch_limit(discord_guild_id)):
             # The limit has been reached or exceeded, return True
             return(True)
 
@@ -128,14 +126,34 @@ class notification_limit(object):
         #  the given discord_guild_id.
         # Returns False if the limit is not reached.
 
-        # Create an SQL statement to count the number of YouTube notifications
-        sql = "SELECT count(`id`) as 'count' FROM `youtube_notifications` WHERE `discord_guild_id` = %s"
-        res = self.db.select(sql, [discord_guild_id])
+        notification_count = self.get_youtube_notification_count(discord_guild_id)
 
         # Check if the 'count' is equal to or greater than the YouTube notification limit
-        if(res[0]['count'] >= self.get_youtube_limit(discord_guild_id)):
+        if(notification_count >= self.get_youtube_limit(discord_guild_id)):
             # The limit has been reached or exceeded, return True
             return(True)
 
         # The limit has not been reached
         return(False)
+
+
+    def get_twitch_notification_count(self, discord_guild_id):
+        # This function will return an int indicating the number of
+        # twitch notifications associated with a guild
+
+        # Create an SQL query to count the number of Twitch notifications
+        sql = "SELECT count(`id`) as 'count' FROM `twitch_notifications` WHERE `discord_guild_id` = %s"
+        res = self.db.select(sql, [discord_guild_id])
+
+        # Return the count column of row 1
+        return(res[0]['count'])
+
+    def get_youtube_notification_count(self, discord_guild_id):
+        # This function will return an int indicating the number of
+        # youtube notifications associated with a guild
+
+        # Create an SQL statement to count the number of YouTube notifications
+        sql = "SELECT count(`id`) as 'count' FROM `youtube_notifications` WHERE `discord_guild_id` = %s"
+        res = self.db.select(sql, [discord_guild_id])
+
+        return(res[0]['count'])

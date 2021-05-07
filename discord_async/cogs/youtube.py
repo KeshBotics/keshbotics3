@@ -5,7 +5,11 @@ import requests
 import json
 import os
 
-usage = os.getenv('COMMAND_PREFIX') + 'youtube <action (add/del/delete)> <YouTube channel URL>'
+usage = ("> Syntax:\n"
+        "> ```" + os.getenv("COMMAND_PREFIX") + "youtube <action (add/del/delete)> <YouTube channel URL>``` \n"
+        "> Example:\n"
+        "> ```" + os.getenv("COMMAND_PREFIX") + "youtube add youtube.com/channel/UCX6OQ3DkcsbYNE6H8uQQuVA```"
+        )
 
 class youtube_cog(commands.Cog):
 
