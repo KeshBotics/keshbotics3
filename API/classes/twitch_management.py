@@ -77,8 +77,6 @@ class twitch_management(object):
         # Used to remove a notification from the database
         # 1. Check if Twitch User ID is present
         # 2. Delete the notifcation from the database
-        # NOTE: Obsolete Twitch channels will be removed via CRON task.
-        # NOTE: Obsolete Twitch webhook subscriptions will expire naturally
 
         if(self.twitch_user_id == None):
             return({"status":"error", "code":400, "message":"Twitch username is invalid!"})
@@ -123,24 +121,29 @@ class twitch_handler(object):
         if(mode.lower() == 'subscribe' or mode.lower() == 'unsubscribe'):
             # TODO: update to eventsub
 
-
-
             headers = {
                         'Content-Type' : 'application/json',
                         'client-id' : os.getenv('TWITCH_CLIENT_ID').strip("\r"),
                         'Authorization': self.twitch_oauth_token
                         }
 
-            data = {"hub.mode":mode.lower(),
-                "hub.topic":str("https://api.twitch.tv/helix/streams?user_id=" + twitch_user_id),
-                "hub.callback":str(os.getenv('API_URL') + "/twitch/callback/streams/" + twitch_user_id),
-                "hub.lease_seconds":"864000",
-                "hub.secret":"top_secret",}
+            data = {
+                    "type": "stream.online",
+                    "version": "1",
+                    "condition": {
+                        "broadcaster_user_id": twitch_user_id
+                    },
+                    "transport": {
+                        "method": "webhook",
+                        "callback": str(os.getenv('API_URL').strip("\r")) + "/twitch/callback/streams/" + twitch_user_id,
+                        "secret": str(os.getenv('API_AUTH_CODE'))
+                    }
+                }
 
-            r = requests.post('https://api.twitch.tv/helix/webhooks/hub', data=json.dumps(data), headers=headers)
+            r = requests.post('https://api.twitch.tv/helix/eventsub/subscriptions', data=json.dumps(data), headers=headers)
 
-            # print(r.content)
-            if(r.status_code == 202):
+            if r.status_code in [200,202,409]:
+                # 409 indicates that the notification already exist
                 return(True)
             else:
                 return(False)
@@ -166,7 +169,7 @@ class twitch_handler(object):
             else:
                 # New event, add to the database
                 sql = "INSERT INTO `twitch_event_ids` (`event_id`) VALUES (%s)"
-                data_handler().insert(sql, [event["event_id"]])
+                data_handler().insert(sql, [event["id"]])
 
 
             if(event["type"] == "live"):
