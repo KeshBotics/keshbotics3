@@ -12,6 +12,8 @@ import requests
 import os
 
 from classes.data_handler import data_handler
+from classes.event_logging.event_logging import get_logger
+from classes.discord_post import discord_post
 from classes.notification_limit import notification_limit
 
 class twitch_management(object):
@@ -75,8 +77,6 @@ class twitch_management(object):
         # Used to remove a notification from the database
         # 1. Check if Twitch User ID is present
         # 2. Delete the notifcation from the database
-        # NOTE: Obsolete Twitch channels will be removed via CRON task.
-        # NOTE: Obsolete Twitch webhook subscriptions will expire naturally
 
         if(self.twitch_user_id == None):
             return({"status":"error", "code":400, "message":"Twitch username is invalid!"})
@@ -126,19 +126,72 @@ class twitch_handler(object):
                         'Authorization': self.twitch_oauth_token
                         }
 
-            data = {"hub.mode":mode.lower(),
-                "hub.topic":str("https://api.twitch.tv/helix/streams?user_id=" + twitch_user_id),
-                "hub.callback":str(os.getenv('API_URL') + "/twitch/callback/streams/" + twitch_user_id),
-                "hub.lease_seconds":"864000",
-                "hub.secret":"top_secret",}
+            data = {
+                    "type": "stream.online",
+                    "version": "1",
+                    "condition": {
+                        "broadcaster_user_id": twitch_user_id
+                    },
+                    "transport": {
+                        "method": "webhook",
+                        "callback": str(os.getenv('API_URL').strip("\r")) + "/twitch/callback/streams/" + twitch_user_id,
+                        "secret": str(os.getenv('API_AUTH_CODE'))
+                    }
+                }
 
-            r = requests.post('https://api.twitch.tv/helix/webhooks/hub', data=json.dumps(data), headers=headers)
+            r = requests.post('https://api.twitch.tv/helix/eventsub/subscriptions', data=json.dumps(data), headers=headers)
 
-            # print(r.content)
-            if(r.status_code == 202):
+            if r.status_code in [200,202,409]:
+                # 409 indicates that the notification already exist
                 return(True)
             else:
                 return(False)
 
     def subscribe(self, twitch_user_id):
         return(self.update_subscription('subscribe', twitch_user_id))
+
+    def event(self, data):
+        # This function is called when Twitch sends a webhook callback
+
+        event = data["event"]
+
+        try:
+            # store/check event["id"]; Twitch creates a unique ID for each event
+            #  Sometimes the same event can be delivered multiple times. This prevents
+            #  the event from being processed multiple times.
+            sql = "SELECT `event_id` FROM `twitch_event_ids` WHERE `event_id` = %s"
+            res = data_handler().select(sql, [event["id"]])
+
+            if(len(res) != 0):
+                # Event has already been published
+                return
+
+            # New event, add to the database
+            sql = "INSERT INTO `twitch_event_ids` (`event_id`) VALUES (%s)"
+            data_handler().insert(sql, [event["id"]])
+
+            if(event["type"] == "live"):
+                # Channel is now live
+
+                # Update live status in database
+                sql = "UPDATE `twitch_channels` SET `streaming` = 1 WHERE `twitch_user_id` =  %s"
+                data_handler().update(sql, [event['broadcaster_user_id']])
+
+                # Format thumbnail URL
+                twitch_thumbnail_url = "https://static-cdn.jtvnw.net/previews-ttv/live_user_" + event["broadcaster_user_name"]  + "-640x360.jpg"
+
+                # Prepare and Send discord message
+                discord_post_obj    = discord_post()
+                message             = discord_post_obj.prepare_twitch_message(event["broadcaster_user_name"], twitch_thumbnail_url)
+                discord_channel_ids = data_handler().select('SELECT DISTINCT `discord_channel_id` FROM `twitch_notifications` WHERE `twitch_user_id`=%s', [event["broadcaster_user_id"]])
+                discord_channel_ids = list(map(lambda x : x['discord_channel_id'], discord_channel_ids)) # FLatten results into a list
+                discord_post_obj.post_message(message, discord_channel_ids)
+
+            elif(event["type"] == "offline"):
+
+                # Set streaming status to false
+                sql = "UPDATE `twitch_channels` SET `streaming` = 0 WHERE `twitch_user_id` = %s"
+                data_handler().update(sql, [event['broadcaster_user_id']])
+
+        except Exception as e:
+            get_logger().error(e, exc_info=True)
