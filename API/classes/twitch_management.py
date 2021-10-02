@@ -119,7 +119,6 @@ class twitch_handler(object):
 
     def update_subscription(self, mode, twitch_user_id):
         if(mode.lower() == 'subscribe' or mode.lower() == 'unsubscribe'):
-            # TODO: update to eventsub
 
             headers = {
                         'Content-Type' : 'application/json',
@@ -166,11 +165,10 @@ class twitch_handler(object):
             if(len(res) != 0):
                 # Event has already been published
                 return
-            else:
-                # New event, add to the database
-                sql = "INSERT INTO `twitch_event_ids` (`event_id`) VALUES (%s)"
-                data_handler().insert(sql, [event["id"]])
-                pass
+
+            # New event, add to the database
+            sql = "INSERT INTO `twitch_event_ids` (`event_id`) VALUES (%s)"
+            data_handler().insert(sql, [event["id"]])
 
             if(event["type"] == "live"):
                 # Channel is now live
