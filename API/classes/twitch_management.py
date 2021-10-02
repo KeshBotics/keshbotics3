@@ -169,7 +169,7 @@ class twitch_handler(object):
             else:
                 # New event, add to the database
                 sql = "INSERT INTO `twitch_event_ids` (`event_id`) VALUES (%s)"
-                data_handler().insert(sql, [event["event_id"]])
+                data_handler().insert(sql, [event["id"]])
 
 
             if(event["type"] == "live"):
