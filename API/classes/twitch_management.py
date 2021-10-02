@@ -12,6 +12,8 @@ import requests
 import os
 
 from classes.data_handler import data_handler
+from classes.event_logging.event_logging import get_logger
+from classes.discord_post import discord_post
 from classes.notification_limit import notification_limit
 
 class twitch_management(object):
@@ -119,6 +121,9 @@ class twitch_handler(object):
 
     def update_subscription(self, mode, twitch_user_id):
         if(mode.lower() == 'subscribe' or mode.lower() == 'unsubscribe'):
+            # TODO: update to eventsub
+
+
 
             headers = {
                         'Content-Type' : 'application/json',
@@ -142,3 +147,50 @@ class twitch_handler(object):
 
     def subscribe(self, twitch_user_id):
         return(self.update_subscription('subscribe', twitch_user_id))
+
+    def event(self, data):
+        # This function is called when Twitch sends a webhook callback
+
+        event = data['event']
+
+        try:
+            # store/check event["id"]; Twitch creates a unique ID for each event
+            #  Sometimes the same event can be delivered multiple times. This prevents
+            #  the event from being processed multiple times.
+            sql = "SELECT event_id FROM `twitch_event_ids` WHERE `event_id` = %s"
+            res = data_handler().select(sql, [event["event_id"]])
+
+            if(len(res) != 0):
+                # Event has already been published
+                return
+            else:
+                # New event, add to the database
+                sql = "INSERT INTO `twitch_event_ids` (`event_id`) VALUES (%s)"
+                data_handler().insert(sql, [event["event_id"]])
+
+
+            if(event["type"] == "live"):
+                # Channel is now live
+
+                # Update live status in database
+                sql = "UPDATE `twitch_channels` SET `streaming` = 1 WHERE `twitch_user_id` =  %s"
+                data_handler().update(sql, [event['broadcaster_user_id']])
+
+                # Format thumbnail URL
+                twitch_thumbnail_url = "https://static-cdn.jtvnw.net/previews-ttv/live_user_" + event["broadcaster_login_name"]  + "-640x360.jpg"
+
+                # Prepare and Send discord message
+                discord_post_obj    = discord_post()
+                message             = discord_post_obj.prepare_twitch_message(event["broadcaster_login_name"], twitch_thumbnail_url)
+                discord_channel_ids = data_handler().select('SELECT DISTINCT `discord_channel_id` FROM `twitch_notifications` WHERE `twitch_user_id`=%s', [event["broadcaster_user_id"]])
+                discord_channel_ids = list(map(lambda x : x['discord_channel_id'], discord_channel_ids)) # FLatten results into a list
+                discord_post_obj.post_message(message, discord_channel_ids)
+
+            elif(event["type"] == "offline"):
+
+                # Set streaming status to false
+                sql = "UPDATE `twitch_channels` SET `streaming` = 0 WHERE `twitch_user_id` = %s"
+                data_handler().update(sql, [event['broadcaster_user_id']])
+
+        except Exception as e:
+            get_logger().error(e, exc_info=True)
