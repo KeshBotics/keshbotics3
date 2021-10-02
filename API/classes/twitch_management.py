@@ -154,14 +154,14 @@ class twitch_handler(object):
     def event(self, data):
         # This function is called when Twitch sends a webhook callback
 
-        event = data['event']
+        event = data["event"]
 
         try:
             # store/check event["id"]; Twitch creates a unique ID for each event
             #  Sometimes the same event can be delivered multiple times. This prevents
             #  the event from being processed multiple times.
-            sql = "SELECT event_id FROM `twitch_event_ids` WHERE `event_id` = %s"
-            res = data_handler().select(sql, [event["event_id"]])
+            sql = "SELECT `event_id` FROM `twitch_event_ids` WHERE `event_id` = %s"
+            res = data_handler().select(sql, [event["id"]])
 
             if(len(res) != 0):
                 # Event has already been published
@@ -170,7 +170,7 @@ class twitch_handler(object):
                 # New event, add to the database
                 sql = "INSERT INTO `twitch_event_ids` (`event_id`) VALUES (%s)"
                 data_handler().insert(sql, [event["id"]])
-
+                pass
 
             if(event["type"] == "live"):
                 # Channel is now live
@@ -180,11 +180,11 @@ class twitch_handler(object):
                 data_handler().update(sql, [event['broadcaster_user_id']])
 
                 # Format thumbnail URL
-                twitch_thumbnail_url = "https://static-cdn.jtvnw.net/previews-ttv/live_user_" + event["broadcaster_login_name"]  + "-640x360.jpg"
+                twitch_thumbnail_url = "https://static-cdn.jtvnw.net/previews-ttv/live_user_" + event["broadcaster_user_name"]  + "-640x360.jpg"
 
                 # Prepare and Send discord message
                 discord_post_obj    = discord_post()
-                message             = discord_post_obj.prepare_twitch_message(event["broadcaster_login_name"], twitch_thumbnail_url)
+                message             = discord_post_obj.prepare_twitch_message(event["broadcaster_user_name"], twitch_thumbnail_url)
                 discord_channel_ids = data_handler().select('SELECT DISTINCT `discord_channel_id` FROM `twitch_notifications` WHERE `twitch_user_id`=%s', [event["broadcaster_user_id"]])
                 discord_channel_ids = list(map(lambda x : x['discord_channel_id'], discord_channel_ids)) # FLatten results into a list
                 discord_post_obj.post_message(message, discord_channel_ids)
