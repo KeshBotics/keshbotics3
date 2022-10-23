@@ -229,10 +229,16 @@ class youtube_management(object):
 
         snippet_data  = self.get_display_name(yt_channel_ids)
 
+
         for channel in snippet_data['items']:
-            yt_channel_id = channel['id']
-            yt_display_name = channel['snippet']['title']
-            self.data_handler.update("UPDATE `youtube_channels` SET `yt_display_name` = %s WHERE `yt_channel_id` = %s", [yt_display_name, yt_channel_id])
+            try:
+                yt_channel_id = channel['id']
+                yt_display_name = channel['snippet']['title']
+                self.data_handler.update("UPDATE `youtube_channels` SET `yt_display_name` = %s WHERE `yt_channel_id` = %s", [yt_display_name, yt_channel_id])
+            except Exception as e:
+                pass
+
+        return
 
     def update_webhook_subs(self):
         # Will update the pubsubhubbub webhook subscription for each channel
